@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                                        String        @id @default(uuid())
+  full_name                                 String
+  email                                     String        @unique
+  password                                  String
+  role                                      UserRole
+  referral_code                             String        @unique
+  referred_by                               String?
+  profile_picture                           String?
+  created_at                                DateTime      @default(now())
+  Coupon                                    Coupon[]
+  Event                                     Event[]
+  Point                                     Point[]
+  ReferralLog_ReferralLog_referee_idToUser  ReferralLog[] @relation("ReferralLog_referee_idToUser")
+  ReferralLog_ReferralLog_referrer_idToUser ReferralLog[] @relation("ReferralLog_referrer_idToUser")
+  Review                                    Review[]
+  Transaction                               Transaction[]
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  user_id    String
+  event_id   String
+  rating     Int
+  comment    String?
+  created_at DateTime @default(now())
+  Event      Event    @relation(fields: [event_id], references: [id])
+  User       User     @relation(fields: [user_id], references: [id])
+}
+
+model Event {
+  id              String        @id @default(uuid())
+  organizer_id    String
+  name            String
+  description     String
+  category        String
+  location        String
+  price           Int
+  start_date      DateTime
+  end_date        DateTime
+  total_seats     Int
+  remaining_seats Int
+  created_at      DateTime      @default(now())
+  User            User          @relation(fields: [organizer_id], references: [id])
+  Review          Review[]
+  Transaction     Transaction[]
+  Voucher         Voucher[]
+}
+
+model Transaction {
+  id              String            @id @default(uuid())
+  user_id         String
+  event_id        String
+  ticket_quantity Int
+  locked_price    Int
+  total_price     Int
+  status          TransactionStatus
+  payment_proof   String?
+  created_at      DateTime          @default(now())
+  updated_at      DateTime
+  Event           Event             @relation(fields: [event_id], references: [id])
+  User            User              @relation(fields: [user_id], references: [id])
+}
+
+model Coupon {
+  id              String   @id
+  user_id         String
+  code            String   @unique
+  discount_amount Int
+  expired_at      DateTime
+  used            Boolean  @default(false)
+  created_at      DateTime @default(now())
+  User            User     @relation(fields: [user_id], references: [id])
+}
+
+model Point {
+  id         String      @id
+  user_id    String
+  amount     Int
+  source     PointSource
+  expired_at DateTime
+  created_at DateTime    @default(now())
+  User       User        @relation(fields: [user_id], references: [id])
+}
+
+model ReferralLog {
+  id                                 String   @id
+  referrer_id                        String
+  referee_id                         String
+  created_at                         DateTime @default(now())
+  User_ReferralLog_referee_idToUser  User     @relation("ReferralLog_referee_idToUser", fields: [referee_id], references: [id])
+  User_ReferralLog_referrer_idToUser User     @relation("ReferralLog_referrer_idToUser", fields: [referrer_id], references: [id])
+}
+
+model Voucher {
+  id              String   @id
+  event_id        String
+  code            String   @unique
+  discount_amount Int
+  start_date      DateTime
+  end_date        DateTime
+  created_at      DateTime @default(now())
+  Event           Event    @relation(fields: [event_id], references: [id])
+}
+
+enum TransactionStatus {
+  waiting_payment
+  waiting_confirm
+  done
+  rejected
+  expired
+  canceled
+}
+
+enum PointSource {
+  referral
+  refund
+  redeem
+}
+
+enum UserRole {
+  CUSTOMER
+  ORGANIZER
+  ADMIN
+}
