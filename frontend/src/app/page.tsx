@@ -8,20 +8,18 @@ import Footer from '@/components/Footer';
 import { fetchEvents, Event } from '@/features/events/eventService';
 
 const categories = ['Jazz', 'J-Pop', 'K-Pop', 'Rock', 'Indie', 'EDM'];
-const locations = ['Jakarta', 'Bandung', 'Surabaya', 'Yogyakarta'];
 
 export default function HomePage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
-  const [location, setLocation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function getEvents() {
       setIsLoading(true);
       try {
-        const eventsData = await fetchEvents(search, category, location);
+        const eventsData = await fetchEvents(search, category);
         setEvents(eventsData || []);
       } catch (error) {
         console.error('Failed to fetch events:', error);
@@ -31,20 +29,12 @@ export default function HomePage() {
       }
     }
     getEvents();
-  }, [search, category, location]);
+  }, [search, category]);
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col">
-      <Navbar
-        search={search}
-        setSearch={setSearch}
-        category={category}
-        setCategory={setCategory}
-        location={location}
-        setLocation={setLocation}
-        categories={categories}
-        locations={locations}
-      />
+      {/* ✅ Navbar hanya menerima search dan setSearch */}
+      <Navbar search={search} setSearch={setSearch} />
 
       <main className="flex flex-col items-center px-4 md:px-12 lg:px-24 pt-32 pb-8 gap-8">
         {/* Promo of the Week */}

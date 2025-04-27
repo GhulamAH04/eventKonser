@@ -1,23 +1,26 @@
-import axios from "axios";
+import axios from 'axios';
 
 export interface Event {
   id: string;
   name: string;
-  description: string;
   location: string;
-  price: number;
   start_date: string;
   end_date: string;
+  price: number;
+  description?: string;
 }
 
-export const fetchEvents = async (search?: string): Promise<Event[]> => {
-  const res = await axios.get('/events', {
-    params: { search }
-  });
-  return res.data.data;
-};
-
-export const getEventById = async (id: string): Promise<Event> => {
-  const res = await axios.get(`/events/${id}`);
-  return res.data.data;
-};
+export async function fetchEvents(search?: string, category?: string): Promise<Event[]> {
+  try {
+    const response = await axios.get('/api/events', {
+      params: {
+        search,
+        category,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch events:', error);
+    return [];
+  }
+}
