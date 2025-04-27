@@ -1,15 +1,18 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import api from "@/lib/axios";
-import { Event } from "@/interface/event";
-import EventCard from "@/components/EventCard";
+import { useEffect, useState } from 'react';
+import { fetchEvents, Event } from '@/features/events/eventService'; // 🔥 ganti import dari eventService
+import EventCard from '@/components/EventCard';
 
 export default function EventListPage() {
   const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
-    api.get("/events").then((res) => setEvents(res.data));
+    async function loadEvents() {
+      const data = await fetchEvents();
+      setEvents(data);
+    }
+    loadEvents();
   }, []);
 
   return (

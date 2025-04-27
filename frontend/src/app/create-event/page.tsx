@@ -1,8 +1,10 @@
+"use client"
+
 import EventForm from "@/components/EventForm";
 import { toast } from "react-hot-toast";
 import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
-import { Event } from "@/interface/event"; // 🔥 Import ini untuk pakai type Event
+import { Event } from "@/interfaces";
 
 export default function CreateEventPage() {
   const router = useRouter();
