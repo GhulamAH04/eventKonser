@@ -1,17 +1,23 @@
-// src/features/events/eventService.ts
 import axios from "axios";
 
 export interface Event {
-  id: number;
+  id: string;
   name: string;
+  description: string;
   location: string;
+  price: number;
   start_date: string;
   end_date: string;
-  price: number;
-  // tambah field lain sesuai database kamu
 }
 
-export async function fetchEvents(): Promise<Event[]> {
-  const response = await axios.get<Event[]>('http://localhost:3001/api/events');
-  return response.data;
-}
+export const fetchEvents = async (search?: string): Promise<Event[]> => {
+  const res = await axios.get('/events', {
+    params: { search }
+  });
+  return res.data.data;
+};
+
+export const getEventById = async (id: string): Promise<Event> => {
+  const res = await axios.get(`/events/${id}`);
+  return res.data.data;
+};

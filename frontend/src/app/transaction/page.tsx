@@ -1,85 +1,66 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import api from "@/lib/axios";
+import { useEffect, useState } from 'react';
+import { getUserTransactions, Transaction } from '@/features/transactions/transactionService';
+import Navbar from '@/components/NavBar';
+import Footer from '@/components/Footer';
+import Link from 'next/link';
 
-type Transaction = {
-  id: string;
-  totalPrice: number;
-  status: string;
-  event?: {
-    name: string;
-  };
-};
-
-export default function TransactionHistoryPage() {
+export default function TransactionListPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
-    const fetchTransactions = async () => {
+    async function fetchTransactions() {
       try {
-        const res = await api.get("/transactions");
-        setTransactions(res.data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+        const data = await getUserTransactions();
+        setTransactions(data);
+      } catch (error) {
+        console.error('Failed to fetch transactions:', error);
       }
-    };
+    }
     fetchTransactions();
   }, []);
 
-  if (loading)
-    return <p className="text-center p-6">Loading transactions...</p>;
-
   return (
-    <main className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-center">My Transactions</h1>
+    <div className="min-h-screen flex flex-col bg-sky-50">
+      <Navbar />
+      <main className="flex flex-col items-center px-4 md:px-12 lg:px-24 py-12 gap-8 mt-24">
+        <h1 className="text-3xl md:text-5xl font-bold text-sky-700 text-center">Transaksi Saya</h1>
 
-      {transactions.length === 0 ? (
-        <p className="text-center text-gray-600">No transactions found.</p>
-      ) : (
-        <div className="grid gap-4">
-          {transactions.map((trx) => (
-            <div
-              key={trx.id}
-              className="border p-4 rounded-lg shadow hover:shadow-md transition"
-            >
-              <h2 className="font-bold text-lg mb-2">
-                {trx.event?.name || "Unknown Event"}
-              </h2>
-
-              <div className="flex items-center justify-between mb-2">
-                <span
-                  className={`px-2 py-1 text-xs rounded-full ${
-                    trx.status === "done"
-                      ? "bg-green-100 text-green-700"
-                      : trx.status.includes("waiting")
-                      ? "bg-yellow-100 text-yellow-700"
-                      : "bg-red-100 text-red-700"
-                  }`}
-                >
-                  {trx.status.replaceAll("_", " ").toUpperCase()}
-                </span>
-
-                <p className="text-gray-600 text-sm">
-                  IDR {trx.totalPrice.toLocaleString()}
+        <div className="w-full max-w-5xl bg-white rounded-2xl shadow-lg p-8 flex flex-col gap-6">
+          {transactions.length === 0 ? (
+            <p className="text-center text-gray-600">Belum ada transaksi.</p>
+          ) : (
+            transactions.map((transaction) => (
+              <div key={transaction.id} className="border rounded-lg p-4 flex flex-col gap-2">
+                <p>
+                  <span className="font-semibold">Event:</span> {transaction.eventName}
                 </p>
-              </div>
+                <p>
+                  <span className="font-semibold">Jumlah Tiket:</span> {transaction.ticket_quantity}
+                </p>
+                <p>
+                  <span className="font-semibold">Total:</span> Rp{' '}
+                  {transaction.total_price.toLocaleString()}
+                </p>
+                <p>
+                  <span className="font-semibold">Status:</span> {transaction.status}
+                </p>
 
-              <button
-                onClick={() => router.push(`/transactions/${trx.id}`)}
-                className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-              >
-                View Details
-              </button>
-            </div>
-          ))}
+                {transaction.status === 'waiting_payment' && (
+                  <Link
+                    href={`/payment-proof/${transaction.id}`}
+                    className="text-sky-600 font-bold underline mt-2"
+                  >
+                    Upload Bukti Pembayaran
+                  </Link>
+                )}
+              </div>
+            ))
+          )}
         </div>
-      )}
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 }

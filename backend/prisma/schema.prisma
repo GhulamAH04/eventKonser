@@ -8,33 +8,22 @@ datasource db {
 }
 
 model User {
-  id                                        String        @id @default(uuid())
-  full_name                                 String
-  email                                     String        @unique
-  password                                  String
-  role                                      UserRole
-  referral_code                             String        @unique
-  referred_by                               String?
-  profile_picture                           String?
-  created_at                                DateTime      @default(now())
-  Coupon                                    Coupon[]
-  Event                                     Event[]
-  Point                                     Point[]
+  id          String      @id @default(uuid())
+  full_name   String
+  email       String      @unique
+  password    String
+  role        UserRole
+  referral_code String    @unique
+  referred_by   String?
+  profile_picture String?
+  created_at  DateTime    @default(now())
+  Coupon      Coupon[]
+  Event       Event[]
+  Point       Point[]
   ReferralLog_ReferralLog_referee_idToUser  ReferralLog[] @relation("ReferralLog_referee_idToUser")
   ReferralLog_ReferralLog_referrer_idToUser ReferralLog[] @relation("ReferralLog_referrer_idToUser")
-  Review                                    Review[]
-  Transaction                               Transaction[]
-}
-
-model Review {
-  id         String   @id @default(uuid())
-  user_id    String
-  event_id   String
-  rating     Int
-  comment    String?
-  created_at DateTime @default(now())
-  Event      Event    @relation(fields: [event_id], references: [id])
-  User       User     @relation(fields: [user_id], references: [id])
+  Review      Review[]
+  Transaction Transaction[]
 }
 
 model Event {
@@ -56,6 +45,17 @@ model Event {
   Voucher         Voucher[]
 }
 
+model Review {
+  id         String   @id @default(uuid())
+  user_id    String
+  event_id   String
+  rating     Int
+  comment    String?
+  created_at DateTime @default(now())
+  Event      Event    @relation(fields: [event_id], references: [id])
+  User       User     @relation(fields: [user_id], references: [id])
+}
+
 model Transaction {
   id              String            @id @default(uuid())
   user_id         String
@@ -72,7 +72,7 @@ model Transaction {
 }
 
 model Coupon {
-  id              String   @id
+  id              String   @id @default(uuid())
   user_id         String
   code            String   @unique
   discount_amount Int
@@ -83,7 +83,7 @@ model Coupon {
 }
 
 model Point {
-  id         String      @id
+  id         String      @id @default(uuid())
   user_id    String
   amount     Int
   source     PointSource
@@ -93,16 +93,16 @@ model Point {
 }
 
 model ReferralLog {
-  id                                 String   @id
-  referrer_id                        String
-  referee_id                         String
-  created_at                         DateTime @default(now())
-  User_ReferralLog_referee_idToUser  User     @relation("ReferralLog_referee_idToUser", fields: [referee_id], references: [id])
-  User_ReferralLog_referrer_idToUser User     @relation("ReferralLog_referrer_idToUser", fields: [referrer_id], references: [id])
+  id          String   @id @default(uuid())
+  referrer_id String
+  referee_id  String
+  created_at  DateTime @default(now())
+  User_ReferralLog_referee_idToUser  User @relation("ReferralLog_referee_idToUser", fields: [referee_id], references: [id])
+  User_ReferralLog_referrer_idToUser User @relation("ReferralLog_referrer_idToUser", fields: [referrer_id], references: [id])
 }
 
 model Voucher {
-  id              String   @id
+  id              String   @id @default(uuid())
   event_id        String
   code            String   @unique
   discount_amount Int

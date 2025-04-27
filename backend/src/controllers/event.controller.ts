@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { createEvent, getAllEvents as serviceGetAllEvents, getEventById } from '../services/event.service';
 import { sendSuccess, sendError } from "../utils/responseHelper";
 
-// Untuk GET semua event, dengan optional search dan location
+// GET all events with optional search and location
 export const getEvents = async (req: Request, res: Response) => {
   try {
     const { search = '', location = '' } = req.query;
@@ -14,23 +14,25 @@ export const getEvents = async (req: Request, res: Response) => {
   }
 };
 
-// Untuk POST membuat event baru
+// POST create new event
 export const postEvent = async (req: Request, res: Response) => {
   try {
-    const { name, location, price, startDate, endDate, description, promotion } = req.body;
+    const { name, category, location, price, startDate, endDate, description, promotion } = req.body;
 
-    if (!name || !location || !startDate || !endDate) {
+    if (!name || !category || !location || !startDate || !endDate) {
       return sendError(res, "Missing required fields", 400);
     }
 
     const event = await createEvent({
       name,
+      category,
       location,
       price,
       startDate,
       endDate,
       description,
-      promotion, 
+      promotion,
+      totalSeats: 100, // 🔥 sementara hardcode, bisa diubah dari req.body kalau mau
     });
 
     sendSuccess(res, "Event created successfully", event, 201);
@@ -40,7 +42,7 @@ export const postEvent = async (req: Request, res: Response) => {
   }
 };
 
-// Untuk GET 1 event by ID
+// GET 1 event by ID
 export const getEvent = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

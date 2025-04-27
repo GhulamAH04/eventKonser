@@ -1,23 +1,26 @@
-import prisma from "../../prisma/client";
+import prisma from '../../prisma/client';
+
 export const getAllEvents = async (search?: string, location?: string) => {
-  return await prisma.event.findMany({
+  return prisma.event.findMany({
     where: {
-      name: {
-        contains: search,
-        mode: 'insensitive',
-      },
-      location: location ? { equals: location } : undefined,
+      AND: [
+        search ? { name: { contains: search, mode: 'insensitive' } } : {},
+        location ? { location: { contains: location, mode: 'insensitive' } } : {},
+      ],
     },
-    orderBy: { startDate: 'asc' },
+    orderBy: { start_date: 'asc' },
   });
 };
+
 export const createEvent = async (data: {
   name: string;
   description?: string;
+  category: string;
   location: string;
   price: number;
   startDate: string;
   endDate: string;
+  totalSeats: number;
   promotion?: {
     code: string;
     discount: number;
@@ -25,48 +28,41 @@ export const createEvent = async (data: {
     endDate: string;
   };
 }) => {
-  return await prisma.event.create({
+  const event = await prisma.event.create({
     data: {
       name: data.name,
-      description: data.description,
+      description: data.description ?? '',
+      category: data.category, // 🔥 (wajib diisi karena required)
       location: data.location,
       price: data.price,
-      startDate: new Date(data.startDate),
-      endDate: new Date(data.endDate),
-      promotion: data.promotion
-        ? {
-            create: [
-              {
-                code: data.promotion.code,
-                discount: data.promotion.discount,
-                startDate: new Date(data.promotion.startDate),
-                endDate: new Date(data.promotion.endDate),
-              },
-            ],
-          }
-        : undefined,
+      start_date: new Date(data.startDate),
+      end_date: new Date(data.endDate),
+      total_seats: data.totalSeats,
+      remaining_seats: data.totalSeats,
+      organizer_id: "your-organizer-id", // ganti pas integrasi session user
     },
   });
+
+  if (data.promotion) {
+    await prisma.voucher.create({
+      data: {
+        event_id: event.id,
+        code: data.promotion.code,
+        discount_amount: data.promotion.discount,
+        start_date: new Date(data.promotion.startDate),
+        end_date: new Date(data.promotion.endDate),
+      },
+    });
+  }
+
+  return event;
 };
-// 🔼 Tambahan: ambil event berdasarkan ID
+
 export const getEventById = async (id: string) => {
-  return await prisma.event.findUnique({
+  return prisma.event.findUnique({
     where: { id },
     include: {
-      promotion: true, // 🔄 untuk menyertakan promo jika ada
+      Voucher: true,
     },
-  });
-};
-
-import prisma from '../libs/prisma';
-
-export const getAllEvents = async (search: string, location: string) => {
-  return prisma.event.findMany({
-    where: {
-      AND: [
-        { name: { contains: search, mode: "insensitive" } },
-        { location: { contains: location, mode: "insensitive" } },
-      ]
-    }
   });
 };

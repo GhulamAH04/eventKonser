@@ -1,112 +1,99 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import api from "@/lib/axios";
-import { toast } from "react-hot-toast";
-import { Event } from "@/interface/event";
-
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { getEventById, Event } from '@/features/events/eventService';
+import Navbar from '@/components/NavBar';
+import Footer from '@/components/Footer';
+import { createTransaction } from '@/features/transactions/transactionService';
 export default function CheckoutPage() {
-  const { id } = useParams();
-  const router = useRouter();
-
+  const { id } = useParams<{ id: string }>();
   const [event, setEvent] = useState<Event | null>(null);
   const [quantity, setQuantity] = useState(1);
-  const [pointBalance, setPointBalance] = useState(0);
-  const [pointsUsed, setPointsUsed] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    const fetchData = async () => {
+    async function fetchEvent() {
       try {
-        const [eventRes, userRes] = await Promise.all([
-          api.get(`/events/${id}`),
-          api.get("/me"),
-        ]);
-        setEvent(eventRes.data);
-        setPointBalance(userRes.data.pointBalance);
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to load data");
-      } finally {
-        setLoading(false);
+        const eventData = await getEventById(id);
+        setEvent(eventData);
+      } catch (error) {
+        console.error('Failed to fetch event for checkout:', error);
       }
-    };
-    if (id) fetchData();
+    }
+    if (id) fetchEvent();
   }, [id]);
 
-  if (loading) return <p className="text-center p-6">Loading...</p>;
-  if (!event)
-    return <p className="text-center p-6 text-red-500">Event not found</p>;
-
-  const ticketPrice = event.price * quantity;
-  const discount = Math.min(pointsUsed, ticketPrice);
-  const finalPrice = ticketPrice - discount;
-
-  const handleCheckout = async () => {
+  const handleConfirm = async () => {
     try {
-      await api.post("/transactions", {
-        eventId: event.id,
-        quantity,
-        pointUsed: pointsUsed,
+      setIsLoading(true);
+      await createTransaction({
+        event_id: id,
+        ticket_quantity: quantity,
       });
-      toast.success("Checkout successful!");
-      router.push("/thank-you");
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to checkout");
+      alert(`Berhasil membeli ${quantity} tiket untuk event ${event?.name}`);
+      router.push('/');
+    } catch (error) {
+      console.error(error)
+      alert('Gagal melakukan pembelian. Coba lagi.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  if (!event) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+
+  const totalPrice = event.price * quantity;
+
   return (
-    <main className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Checkout - {event.name}</h1>
+    <div className="min-h-screen flex flex-col bg-sky-50">
+      <Navbar />
 
-      <div className="space-y-4">
-        <div className="border p-4 rounded shadow">
-          <p>
-            <strong>Price per ticket:</strong> IDR{" "}
-            {event.price.toLocaleString()}
-          </p>
-          <p>
-            <strong>Quantity:</strong>
+      <main className="flex flex-col items-center px-4 md:px-12 lg:px-24 py-12 gap-8 mt-24 animate-fade-up">
+        <h1 className="text-4xl md:text-5xl font-bold text-sky-700 text-center mb-6">
+          Checkout Tiket
+        </h1>
+
+        <div className="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-8 flex flex-col gap-6 transition hover:shadow-2xl">
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold text-gray-800">{event.name}</h2>
+            <p className="text-gray-600">{event.location}</p>
+            <p className="text-gray-600">{new Date(event.start_date).toLocaleDateString()}</p>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <label htmlFor="quantity" className="font-semibold text-gray-700">
+              Jumlah Tiket
+            </label>
             <input
+              id="quantity"
               type="number"
-              value={quantity}
               min={1}
-              onChange={(e) => setQuantity(Number(e.target.value))}
-              className="border rounded p-2 w-20 ml-2"
+              value={quantity}
+              onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
+              className="border border-gray-300 rounded-xl px-4 py-2 w-full text-lg focus:outline-none focus:ring-2 focus:ring-sky-400"
             />
-          </p>
-          <p className="mt-2">
-            <strong>Point Balance:</strong> {pointBalance} points
-          </p>
-          <p className="mt-2">
-            <strong>Use Points:</strong>
-            <input
-              type="number"
-              value={pointsUsed}
-              min={0}
-              max={Math.min(pointBalance, ticketPrice)}
-              onChange={(e) => setPointsUsed(Number(e.target.value))}
-              className="border rounded p-2 w-20 ml-2"
-            />
-          </p>
-        </div>
+          </div>
 
-        <div className="border p-4 rounded shadow">
-          <p>
-            <strong>Final Price:</strong> IDR {finalPrice.toLocaleString()}
-          </p>
-        </div>
+          <div className="text-xl font-bold text-sky-700 text-center">
+            Total: {event.price === 0 ? 'Gratis' : `Rp ${totalPrice.toLocaleString()}`}
+          </div>
 
-        <button
-          onClick={handleCheckout}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-        >
-          Confirm Purchase
-        </button>
-      </div>
-    </main>
+          <button
+            onClick={handleConfirm}
+            disabled={isLoading}
+            className={`mt-6 bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 rounded-lg font-semibold transition 
+              ${isLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
+          >
+            {isLoading ? 'Memproses...' : 'Konfirmasi Pembelian'}
+          </button>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
   );
 }
