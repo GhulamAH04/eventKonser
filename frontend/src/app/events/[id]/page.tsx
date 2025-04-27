@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import api from "@/lib/axios";
-import { Event } from "@/types/event";
+import { Event } from "@/interface/event";
 
 export default function EventDetail() {
   const { id } = useParams();

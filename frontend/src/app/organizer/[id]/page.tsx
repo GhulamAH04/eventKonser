@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import api from "@/lib/axios";
 import { Star } from "lucide-react";
-import { Organizer } from "@/types/organizer";
-import { Review } from "@/types/review";
+import { Organizer } from "@/interface/organizer";
+import { Review } from "@/interface/review";
 
 export default function OrganizerProfilePage() {
   const { id } = useParams();

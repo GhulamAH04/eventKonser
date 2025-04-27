@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import api from "@/lib/axios";
-import { Event } from "@/types/event";
+import { Event } from "@/interface/event";
 import { toast } from "react-hot-toast";
 
 export default function EditEventPage() {

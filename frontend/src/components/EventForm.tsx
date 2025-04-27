@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { EventFormData } from "@/types/event"; // 🔥 Import hanya EventFormData (jangan Event biasa)
+import { EventFormData } from "@/interface/event"; // 🔥 Import hanya EventFormData (jangan Event biasa)
 
 type Props = {
   initialData?: Partial<EventFormData>;

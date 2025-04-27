@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import api from "@/lib/axios";
-import { Event } from "@/types/event";
+import { Event } from "@/interface/event";
 import { getUserFromToken } from "@/lib/auth";
 import LogoutButton from "@/components/LogoutButton";
 import { useRouter } from "next/navigation";

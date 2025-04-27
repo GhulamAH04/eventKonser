@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import api from "@/lib/axios";
 import { toast } from "react-hot-toast";
-import { Event } from "@/types/event";
+import { Event } from "@/interface/event";
 
 export default function CheckoutPage() {
   const { id } = useParams();

@@ -57,3 +57,16 @@ export const getEventById = async (id: string) => {
     },
   });
 };
+
+import prisma from '../libs/prisma';
+
+export const getAllEvents = async (search: string, location: string) => {
+  return prisma.event.findMany({
+    where: {
+      AND: [
+        { name: { contains: search, mode: "insensitive" } },
+        { location: { contains: location, mode: "insensitive" } },
+      ]
+    }
+  });
+};

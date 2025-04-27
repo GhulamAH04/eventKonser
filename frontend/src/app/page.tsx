@@ -1,82 +1,53 @@
 "use client";
 
-import Link from "next/link";
+import { useEffect, useState } from "react";
+import Navbar from "@/components/NavBar";
+import HeroSection from "../components/HeroSection";
+import SearchBar from "../components/SearchBar";
+import EventCard from "../components/EventCard";
+import Footer from "../components/Footer";
+import { fetchEvents, Event } from "../features/events/eventService";
 
-export default function Home() {
+export default function HomePage() {
+  const [events, setEvents] = useState<Event[]>([]);
+
+  useEffect(() => {
+    async function getEvents() {
+      try {
+        const eventsData = await fetchEvents();
+        setEvents(eventsData);
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+      }
+    }
+    getEvents();
+  }, []);
+
   return (
-    <main className="min-h-screen p-6 flex flex-col gap-12 bg-white text-gray-900">
-      {/* Navbar */}
-      <header className="flex justify-between items-center border-b pb-4">
-        <h1 className="text-2xl font-bold">EventKonser</h1>
-        <div className="flex gap-4">
-          <Link
-            href="/login"
-            className="text-blue-600 font-medium hover:underline"
-          >
-            Login
-          </Link>
-          <Link
-            href="/signup"
-            className="text-blue-600 font-medium hover:underline"
-          >
-            Signup
-          </Link>
-        </div>
-      </header>
+    <div className="min-h-screen bg-slate-100 flex flex-col">
+      <Navbar />
+      <HeroSection />
+      <main className="flex flex-col items-center px-4 md:px-12 lg:px-24 py-8 gap-8">
+        <SearchBar />
 
-      {/* Hero Section */}
-      <section className="text-center">
-        <h2 className="text-4xl font-bold mb-2">Book Concert Tickets Online</h2>
-        <p className="text-gray-600 text-lg">
-          Easy, safe, and affordable access to live music experiences.
-        </p>
-        <div className="mt-6">
-          <Link href="/events">
-            <button className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
-              Start Exploring
-            </button>
-          </Link>
-        </div>
-      </section>
+        {/* Static Promo */}
+        <section className="w-full mt-12">
+          <div className="bg-blue-100 text-blue-800 rounded-lg p-6 text-center">
+            <h2 className="text-2xl font-bold mb-2">🔥 Promo of The Week 🔥</h2>
+            <p className="text-lg">
+              Get up to 30% off for your favorite concerts!
+            </p>
+          </div>
+        </section>
 
-      {/* Navigation Cards */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center">
-        {[
-          { href: "/events", label: "🎟️ Browse Events" },
-          { href: "/create-event", label: "📅 Create Event" },
-          { href: "/transactions", label: "🛒 My Transactions" },
-          { href: "/review", label: "⭐ Review Event" },
-          { href: "/dashboard", label: "📂 Organizer Dashboard" },
-          { href: "/login", label: "🔐 Login / Signup" },
-        ].map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="p-6 border rounded shadow hover:shadow-md transition"
-          >
-            {item.label}
-          </Link>
-        ))}
-      </section>
-
-      {/* Genres */}
-      <section className="text-center">
-        <h3 className="text-2xl font-bold mb-4">Popular Genres</h3>
-        <div className="flex flex-wrap justify-center gap-4">
-          {["Jazz", "J-Pop", "K-Pop", "Rock", "Indie", "EDM"].map((genre) => (
-            <span
-              key={genre}
-              className="px-4 py-2 border rounded-full text-sm hover:bg-blue-50"
-            >
-              {genre}
-            </span>
+        {/* Event List */}
+        <section className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8">
+          {events.map((event) => (
+            <EventCard key={event.id} event={event} />
           ))}
-        </div>
-      </section>
-
-      <footer className="text-center text-sm text-gray-500 border-t pt-6">
-        © 2025 EventKonser. All rights reserved.
-      </footer>
-    </main>
+        </section>
+      </main>
+      <Footer />
+    </div>
   );
 }

@@ -1,17 +1,11 @@
-type Props = {
-  value: string;
-  onChange: (val: string) => void;
-};
-
-export default function SearchBar({ value, onChange }: Props) {
+export default function SearchBar() {
   return (
-    
-    <input
-      type="text"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder="Search events..."
-      className="w-full p-2 border rounded-md"
-    />
+    <div className="w-full max-w-2xl">
+      <input
+        type="text"
+        placeholder="Search events..."
+        className="w-full p-4 rounded-lg border border-slate-300 focus:ring-2 focus:ring-sky-400 outline-none"
+      />
+    </div>
   );
 }
