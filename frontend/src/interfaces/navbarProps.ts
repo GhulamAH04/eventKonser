@@ -1,4 +1,4 @@
 export interface NavbarProps {
-  search: string;
-  setSearch: (value: string) => void;
+  search?: string;
+  setSearch?: (value: string) => void;
 }

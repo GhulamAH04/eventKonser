@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Navbar from '@/components/NavBar';
 import Footer from '@/components/Footer';
-import { getEventById, Event } from '@/features/events/eventService';
+import { getEventById } from '@/features/events/eventService';
+import { Event } from '@/interfaces';
 import Link from 'next/link';
 
 export default function EventDetailPage() {
@@ -43,11 +44,11 @@ export default function EventDetailPage() {
           <div className="flex flex-col md:flex-row justify-between gap-4">
             <div>
               <h2 className="text-gray-600 font-semibold">Start Date</h2>
-              <p className="text-sky-700">{new Date(event.start_date).toLocaleDateString()}</p>
+              <p className="text-sky-700">{new Date(event.startDate).toLocaleDateString()}</p>
             </div>
             <div>
               <h2 className="text-gray-600 font-semibold">End Date</h2>
-              <p className="text-sky-700">{new Date(event.end_date).toLocaleDateString()}</p>
+              <p className="text-sky-700">{new Date(event.endDate?).toLocaleDateString()}</p>
             </div>
           </div>
 

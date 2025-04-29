@@ -2,16 +2,23 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getEventById, Event } from '@/features/events/eventService';
+import { getEventById } from '@/features/events/eventService';
+import { Event } from '@/interfaces';
 import Navbar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import { createTransaction } from '@/features/transactions/transactionService';
+import { validateVoucher } from '@/features/vouchers/voucherService';
+import toast from 'react-hot-toast';
+
 export default function CheckoutPage() {
   const { id } = useParams<{ id: string }>();
   const [event, setEvent] = useState<Event | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [voucherCode, setVoucherCode] = useState('');
+  const [discountAmount, setDiscountAmount] = useState(0);
   const router = useRouter();
+
 
   useEffect(() => {
     async function fetchEvent() {
@@ -35,18 +42,36 @@ export default function CheckoutPage() {
       alert(`Berhasil membeli ${quantity} tiket untuk event ${event?.name}`);
       router.push('/');
     } catch (error) {
-      console.error(error)
+      console.error(error);
       alert('Gagal melakukan pembelian. Coba lagi.');
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleApplyVoucher = async () => {
+    try {
+      if (!id) return;
+      const voucher = await validateVoucher(voucherCode, id);
+      setDiscountAmount(voucher.discount_amount);
+      toast.success('Voucher berhasil digunakan!');
+    } catch (error) {
+      console.error(error);
+      toast.error('Voucher tidak valid atau sudah expired.');
+      setDiscountAmount(0);
+    }
+  };
+
+
+  const calculateFinalPrice = (originalPrice: number) => {
+    return Math.max(originalPrice - discountAmount, 0);
+  };
+
   if (!event) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
-  const totalPrice = event.price * quantity;
+  const totalPrice = calculateFinalPrice(event.price * quantity);
 
   return (
     <div className="min-h-screen flex flex-col bg-sky-50">
@@ -61,7 +86,7 @@ export default function CheckoutPage() {
           <div className="space-y-2">
             <h2 className="text-2xl font-bold text-gray-800">{event.name}</h2>
             <p className="text-gray-600">{event.location}</p>
-            <p className="text-gray-600">{new Date(event.start_date).toLocaleDateString()}</p>
+            <p className="text-gray-600">{new Date(event.startDate).toLocaleDateString()}</p>
           </div>
 
           <div className="flex flex-col gap-3">
@@ -78,6 +103,27 @@ export default function CheckoutPage() {
             />
           </div>
 
+          {/* Voucher Section */}
+          <div className="flex flex-col gap-3">
+            <label htmlFor="voucher" className="font-semibold text-gray-700">
+              Voucher Code
+            </label>
+            <input
+              id="voucher"
+              type="text"
+              value={voucherCode}
+              onChange={(e) => setVoucherCode(e.target.value)}
+              className="border border-gray-300 rounded-xl px-4 py-2 w-full text-lg focus:outline-none focus:ring-2 focus:ring-sky-400"
+            />
+            <button
+              onClick={handleApplyVoucher}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition mt-2"
+            >
+              Apply Voucher
+            </button>
+          </div>
+
+          {/* Harga */}
           <div className="text-xl font-bold text-sky-700 text-center">
             Total: {event.price === 0 ? 'Gratis' : `Rp ${totalPrice.toLocaleString()}`}
           </div>

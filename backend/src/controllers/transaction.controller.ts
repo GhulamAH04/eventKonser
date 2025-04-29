@@ -1,4 +1,43 @@
 import { Request, Response } from 'express';
+import prisma from '../../prisma/client';  // Sesuaikan dengan prisma model
+import { AuthRequest } from '../middlewares/auth.middleware'; 
+import { TransactionStatus } from '@prisma/client'; // Import enum dari Prisma
+
+export const uploadPaymentProof = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    const fileUrl = `/uploads/${req.file.filename}`;
+
+    // Update status to 'done' (menggunakan status yang ada di enum)
+    const updated = await prisma.transaction.update({
+      where: { id },
+      data: {
+        payment_proof: fileUrl,
+        status: TransactionStatus.done, // Gunakan status yang ada di enum
+      },
+    });
+
+    // Reduce available seats for the event
+    await prisma.event.update({
+      where: { id: updated.event_id },
+      data: { remaining_seats: { decrement: updated.ticket_quantity } }, // Decrement by ticket_quantity
+    });
+
+    res.status(200).json(updated);
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+
+/*
+import { Request, Response } from 'express';
 import { createTransaction } from '../services/transaction.service';
 import prisma from '../../prisma/client';
 import { confirmTransaction } from '../services/transaction.service';
@@ -68,3 +107,4 @@ export const handleTransactionConfirmation = async (req: Request, res: Response)
     return res.status(500).json({ message: err.message });
   }
 };
+*/

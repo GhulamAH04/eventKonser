@@ -1,15 +1,5 @@
 import axios from 'axios';
-
-export interface Event {
-  id: string;
-  name: string;
-  location: string;
-  start_date: string;
-  end_date: string;
-  price: number;
-  description?: string;
-  organizer_id: string;
-}
+import { Event } from '@/interfaces';
 
 export async function fetchEvents(search?: string, category?: string, location?: string): Promise<Event[]> {
   try {

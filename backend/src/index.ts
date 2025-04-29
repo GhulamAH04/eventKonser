@@ -6,6 +6,9 @@ import transactionRoutes from './routes/transaction.routes';
 import { startTransactionExpireJob } from './jobs/transaction-expire.job';
 import authRoutes from './routes/auth.routes';
 import { autoCancelTransactions } from './jobs/autoCancelTransaction';
+import organizerRoutes from './routes/organizer.routes';
+import reviewRoutes from './routes/reviews.routes';
+import voucherRoutes from './routes/voucher.routes'
 
 dotenv.config();
 
@@ -17,6 +20,10 @@ app.use(express.json());
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
+app.use('/api/organizers', organizerRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use("/api/vouchers", voucherRoutes);
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

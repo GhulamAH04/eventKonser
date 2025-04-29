@@ -5,7 +5,7 @@ flowchart TD
   D --> E{Upload Payment Proof?}
   E -- Yes --> F[Waiting Confirmation]
   E -- No --> G[Expired after 2 Hours]
-  F --> H{Organizer Accept/Reject}
+  F --> H{Organizer Accept/Reject} //buat auto kalau sudah upload
   H -- Accept --> I[Transaction Done]
   H -- Reject --> G[Transaction Rejected]
   

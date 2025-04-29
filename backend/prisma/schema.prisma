@@ -102,14 +102,16 @@ model ReferralLog {
 }
 
 model Voucher {
-  id              String   @id @default(uuid())
-  event_id        String
+  id              String   @id @default(cuid())
   code            String   @unique
   discount_amount Int
   start_date      DateTime
   end_date        DateTime
+  usage_limit     Int      // Membatasi jumlah penggunaan voucher
+  used_count      Int      @default(0) // Jumlah voucher yang sudah digunakan
+  event_id        String
+  event           Event    @relation(fields: [event_id], references: [id])
   created_at      DateTime @default(now())
-  Event           Event    @relation(fields: [event_id], references: [id])
 }
 
 enum TransactionStatus {

@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import api from "@/lib/axios";
 import { useParams } from "next/navigation";
-import { Transaction } from "@/interface/transaction";
+import { Transaction } from "@/interfaces";
 import Image from "next/image";
 import Link from "next/link";
 

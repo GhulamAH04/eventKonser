@@ -5,7 +5,8 @@ import Navbar from '@/components/NavBar';
 import HeroSection from '@/components/HeroSection';
 import EventCard from '@/components/EventCard';
 import Footer from '@/components/Footer';
-import { fetchEvents, Event } from '@/features/events/eventService';
+import { fetchEvents } from '@/features/events/eventService';
+import { Event } from '@/interfaces';
 
 const categories = ['Jazz', 'J-Pop', 'K-Pop', 'Rock', 'Indie', 'EDM'];
 const locations = ['Jakarta', 'Bandung', 'Surabaya', 'Yogyakarta'];
