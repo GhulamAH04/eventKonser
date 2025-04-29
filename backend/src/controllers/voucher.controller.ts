@@ -1,59 +1,64 @@
-// voucher.controller.ts
 import { Request, Response } from "express";
-import prisma from "../../prisma/client";
+import prisma from "../../prisma/client";  // Import Prisma Client
 
-// Create a new voucher
-export const createVoucher = async (req: Request, res: Response) => {
+// Fungsi untuk membuat voucher
+export const createVoucher = async (
+  eventId: string,
+  code: string,
+  discountAmount: number,
+  startDate: Date,
+  endDate: Date,
+  usageLimit: number
+) => {
   try {
-    const { code, discountAmount, startDate, endDate, eventId, usageLimit = 100 } = req.body;  // Default value for usage_limit
-
-    // Create a new voucher entry in the database
     const voucher = await prisma.voucher.create({
       data: {
-        code,
+        event_id: eventId,
+        code: code,
         discount_amount: discountAmount,
         start_date: new Date(startDate),
         end_date: new Date(endDate),
-        event_id: eventId,
-        usage_limit: usageLimit,  // Make sure this is included in the data
+        usage_limit: usageLimit,
+        used_count: 0,  // Default count 0
       },
     });
-
-    res.status(201).json(voucher);
+    return voucher;  // Return the created voucher
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error creating voucher" });
+    console.error("Error creating voucher:", error);
+    throw new Error("Error creating voucher");
   }
 };
 
-// Validate voucher during checkout or usage
-export const validateVoucher = async (req: Request, res: Response) => {
-  try {
-    const { code, eventId } = req.query;
+// Fungsi untuk validasi voucher
+export const validateVoucher = async (code: string, eventId: string) => {
+  const voucher = await prisma.voucher.findUnique({
+    where: { code },
+    include: { event: true },
+  });
 
-    // Search voucher by code and eventId
-    const voucher = await prisma.voucher.findFirst({
-      where: {
-        code: String(code),
-        event_id: String(eventId),
-        start_date: { lte: new Date() }, // Voucher must be valid from the start date
-        end_date: { gte: new Date() },   // Voucher must be valid until the end date
-      },
-    });
-
-    if (!voucher) {
-      return res.status(404).json({ message: "Voucher tidak ditemukan atau sudah expired." });
-    }
-
-    // Check if the voucher usage limit has been reached
-    if (voucher.usage_limit <= voucher.used_count) {
-      return res.status(400).json({ message: "Voucher usage limit reached." });
-    }
-
-    // Return the voucher if it's valid and usage limit has not been reached
-    res.status(200).json(voucher);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error validating voucher" });
+  if (!voucher) {
+    throw new Error('Voucher not found');
   }
+
+  if (voucher.event_id !== eventId) {
+    throw new Error('Voucher not valid for this event');
+  }
+
+  if (voucher.used_count >= voucher.usage_limit) {
+    throw new Error('Voucher has reached the usage limit');
+  }
+
+  const currentDate = new Date();
+  if (currentDate < new Date(voucher.start_date) || currentDate > new Date(voucher.end_date)) {
+    throw new Error('Voucher has expired');
+  }
+
+  await prisma.voucher.update({
+    where: { code },
+    data: {
+      used_count: { increment: 1 }, // Update used_count when voucher is used
+    },
+  });
+
+  return voucher;  // Return the validated voucher
 };

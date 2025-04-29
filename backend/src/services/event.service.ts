@@ -43,17 +43,20 @@ export const createEvent = async (data: {
     },
   });
 
-  if (data.promotion) {
-    await prisma.voucher.create({
-      data: {
-        event_id: event.id,
-        code: data.promotion.code,
-        discount_amount: data.promotion.discount,
-        start_date: new Date(data.promotion.startDate),
-        end_date: new Date(data.promotion.endDate),
-      },
-    });
-  }
+if (data.promotion) {
+  await prisma.voucher.create({
+    data: {
+      event_id: event.id,
+      code: data.promotion.code,
+      discount_amount: data.promotion.discount,
+      start_date: new Date(data.promotion.startDate),
+      end_date: new Date(data.promotion.endDate),
+      usage_limit: 1,  
+      used_count: 0,  
+    },
+  });
+}
+
 
   return event;
 };
