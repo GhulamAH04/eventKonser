@@ -65,35 +65,36 @@ export default function LoginPage() {
 "use client";
 
 import { useState } from "react";
-
+import Navbar from "@/components/NavBar";
 export default function LoginPage() {
   const [role, setRole] = useState<"user" | "organizer">("user");
 
   return (
     <main className="min-h-screen grid grid-cols-1 md:grid-cols-2">
+      {/* Navbar */}
+      <Navbar /> {/* Menambahkan Navbar di bagian atas */}
       {/* Left Side */}
       <div className="bg-blue-100 p-10 flex flex-col justify-center">
         <h1 className="text-4xl font-bold mb-4">Welcome Back!</h1>
         <p className="text-gray-600">
-          {role === "user"
-            ? "Login to browse and buy concert tickets."
-            : "Login to manage your events."}
+          {role === 'user'
+            ? 'Login to browse and buy concert tickets.'
+            : 'Login to manage your events.'}
         </p>
       </div>
-
       {/* Right Side */}
       <div className="p-10 flex flex-col justify-center">
         {/* Toggle Role */}
         <div className="flex gap-6 mb-6">
           <button
-            className={`font-semibold ${role === "user" ? "text-blue-600" : "text-gray-400"}`}
-            onClick={() => setRole("user")}
+            className={`font-semibold ${role === 'user' ? 'text-blue-600' : 'text-gray-400'}`}
+            onClick={() => setRole('user')}
           >
             Participant
           </button>
           <button
-            className={`font-semibold ${role === "organizer" ? "text-blue-600" : "text-gray-400"}`}
-            onClick={() => setRole("organizer")}
+            className={`font-semibold ${role === 'organizer' ? 'text-blue-600' : 'text-gray-400'}`}
+            onClick={() => setRole('organizer')}
           >
             Organizer
           </button>
@@ -104,7 +105,7 @@ export default function LoginPage() {
           <input type="email" placeholder="Email" className="input" />
           <input type="password" placeholder="Password" className="input" />
           <button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-            Login as {role === "user" ? "Participant" : "Organizer"}
+            Login as {role === 'user' ? 'Participant' : 'Organizer'}
           </button>
         </form>
       </div>

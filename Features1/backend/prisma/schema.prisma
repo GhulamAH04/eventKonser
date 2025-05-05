@@ -6,6 +6,7 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+// mempunyai relasi Role, referral code, foto, kupon, point, event, review, dan transaksi
 
 model User {
   id          String      @id @default(uuid())
@@ -25,6 +26,7 @@ model User {
   Review      Review[]
   Transaction Transaction[]
 }
+
 
 model Event {
   id              String        @id @default(uuid())
@@ -114,23 +116,26 @@ model Voucher {
   created_at      DateTime @default(now())
 }
 
+// status transaksi
 enum TransactionStatus {
-  waiting_payment
-  waiting_confirm
+  waiting_payment // menunggu pembayaran
+  waiting_confirm // pembayaran terkonfirmasi
   done
   rejected
   expired
   canceled
 }
 
+// dari mana point berasal
 enum PointSource {
-  referral
+  referral 
   refund
   redeem
 }
 
+
 enum UserRole {
   CUSTOMER
   ORGANIZER
-  ADMIN
+  ADMIN // mungkin perlu untuk mengurus websitenya
 }

@@ -3,12 +3,15 @@
 "use client";
 
 import { useState } from "react";
+import Navbar from "@/components/NavBar";
 
 export default function SignupPage() {
   const [role, setRole] = useState<"user" | "organizer">("user");
 
   return (
     <main className="min-h-screen grid grid-cols-1 md:grid-cols-2">
+      {/* Navbar */}
+      <Navbar />  {/* Menambahkan Navbar di bagian atas */}
       {/* Left Side (Text) */}
       <div className="bg-blue-50 p-10 flex flex-col justify-center">
         <h1 className="text-4xl font-bold mb-4">Join EventKonser</h1>
