@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                   String        @id @default(uuid())
+  full_name            String
+  email                String        @unique
+  password             String
+  role                 UserRole
+  referral_code        String        @unique
+  isVerified  Boolean @default(false)
+  referred_by          String?
+  profile_picture      String?
+  created_at           DateTime      @default(now())
+  coupons              Coupon[]
+  events               Event[]
+  points               Point[]
+  referralLogsReceived ReferralLog[] @relation("referee")
+  referralLogsSent     ReferralLog[] @relation("referrer")
+  reviews              Review[]
+  transactions         Transaction[]
+}
+
+model ReferralLog {
+  id          String   @id @default(uuid())
+  referrer_id String
+  referee_id  String
+  created_at  DateTime @default(now())
+  referee     User     @relation("referee", fields: [referee_id], references: [id])
+  referrer    User     @relation("referrer", fields: [referrer_id], references: [id])
+}
+
+model Event {
+  id              String        @id @default(uuid())
+  organizer_id    String
+  name            String
+  description     String
+  category        String
+  location        String
+  price           Int
+  start_date      DateTime
+  end_date        DateTime
+  total_seats     Int
+  remaining_seats Int
+  created_at      DateTime      @default(now())
+  organizer       User          @relation(fields: [organizer_id], references: [id])
+  reviews         Review[]
+  transactions    Transaction[]
+  vouchers        Voucher[]
+}
+
+model Voucher {
+  id              String   @id @default(uuid())
+  event_id        String
+  code            String   @unique
+  discount_amount Int
+  start_date      DateTime
+  end_date        DateTime
+  created_at      DateTime @default(now())
+  usage_limit     Int
+  used_count      Int      @default(0)
+  event           Event    @relation(fields: [event_id], references: [id])
+}
+
+model Transaction {
+  id              String            @id @default(uuid())
+  user_id         String
+  event_id        String
+  ticket_quantity Int
+  locked_price    Int
+  total_price     Int
+  status          TransactionStatus
+  payment_proof   String?
+  created_at      DateTime          @default(now())
+  updated_at      DateTime          @updatedAt
+  event           Event             @relation(fields: [event_id], references: [id])
+  user            User              @relation(fields: [user_id], references: [id])
+}
+
+model Point {
+  id         String      @id @default(uuid())
+  user_id    String
+  amount     Int
+  source     PointSource
+  expired_at DateTime
+  created_at DateTime    @default(now())
+  user       User        @relation(fields: [user_id], references: [id])
+}
+
+model Coupon {
+  id              String   @id @default(uuid())
+  user_id         String
+  code            String   @unique
+  discount_amount Int
+  expired_at      DateTime
+  used            Boolean  @default(false)
+  created_at      DateTime @default(now())
+  user            User     @relation(fields: [user_id], references: [id])
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  user_id    String
+  event_id   String
+  rating     Int
+  comment    String?
+  created_at DateTime @default(now())
+  event      Event    @relation(fields: [event_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id])
+}
+
+enum UserRole {
+  CUSTOMER
+  ORGANIZER
+  ADMIN
+}
+
+enum TransactionStatus {
+  waiting_payment
+  waiting_confirm
+  done
+  rejected
+  expired
+  canceled
+}
+
+enum PointSource {
+  referral
+  refund
+  redeem
+}
