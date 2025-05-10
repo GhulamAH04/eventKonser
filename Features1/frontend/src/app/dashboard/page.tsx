@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import api from '@/lib/axios';
 import Link from 'next/link';
-import { Event } from '@/interfaces/event'; // ✅ pastikan pakai interfaces
+import { Event } from '@/interfaces/event'; 
 import { getUserFromToken } from '@/lib/auth';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import LogoutButton from '@/components/LogoutButton';
@@ -46,7 +46,7 @@ export default function DashboardPage() {
     try {
       await api.delete(`/events/${selectedEventId}`);
       toast.success('Event berhasil dihapus!');
-      fetchEvents(); // refresh event list
+      fetchEvents(); 
     } catch {
       toast.error('Gagal menghapus event.');
     } finally {
