@@ -18,6 +18,7 @@ CREATE TABLE "User" (
     "referred_by" TEXT,
     "profile_picture" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "isVerified" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -35,6 +36,7 @@ CREATE TABLE "Event" (
     "end_date" TIMESTAMP(3) NOT NULL,
     "total_seats" INTEGER NOT NULL,
     "remaining_seats" INTEGER NOT NULL,
+    "image_url" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Event_pkey" PRIMARY KEY ("id")
@@ -112,6 +114,8 @@ CREATE TABLE "Voucher" (
     "start_date" TIMESTAMP(3) NOT NULL,
     "end_date" TIMESTAMP(3) NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "usage_limit" INTEGER NOT NULL,
+    "used_count" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "Voucher_pkey" PRIMARY KEY ("id")
 );

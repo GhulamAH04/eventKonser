@@ -5,21 +5,9 @@ import { useParams, useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
 import api from "@/lib/axios";
+import { Transaction } from "@/interfaces";
 
-type Transaction = {
-  id: string;
-  status: string;
-  quantity: number;
-  totalPrice: number;
-  paymentProofUrl?: string;
-  event: {
-    name: string;
-    location: string;
-    startDate: string;
-  };
-};
-
-export default function TransactionDetailPage() {
+export default function TransactionPage() {
   const { id } = useParams();
   const router = useRouter();
   const [transaction, setTransaction] = useState<Transaction | null>(null);

@@ -5,3 +5,4 @@ export * from "./transaction";
 export * from "./user";
 export * from './searchBar';
 export * from "./navbarProps"
+export * from "./raw"

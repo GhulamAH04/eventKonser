@@ -1,8 +1,13 @@
-export interface Transaction {
+export type Transaction = {
   id: string;
-  userId: string;
+  status: string;
   quantity: number;
   totalPrice: number;
-  status: string;
   paymentProofUrl?: string;
-}
+  event: {
+    name: string;
+    location: string;
+    startDate: string;
+  };
+};
+

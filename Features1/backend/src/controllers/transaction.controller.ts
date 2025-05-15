@@ -1,7 +1,36 @@
+// hapus middleware
+
 import { Request, Response } from 'express';
 import prisma from '../../prisma/client';  // Sesuaikan dengan prisma model
 import { AuthRequest } from '../middlewares/auth.middleware'; 
 import { TransactionStatus } from '@prisma/client'; // Import enum dari Prisma
+import { sendSuccess, sendError } from '../utils/responseHelper';
+import { createTransaction } from '../services/transaction.service';
+
+
+export const createTransactionController = async (req: Request, res: Response) => {
+  try {
+    const { event_id, ticket_quantity, voucher_code } = req.body;
+
+    // Untuk sementara userId hardcoded, nanti ambil dari JWT session
+    const userId = 'user-1'; // Ganti sesuai autentikasi
+    if (!userId || !event_id || !ticket_quantity) {
+      return sendError(res, 'Missing required fields', 400);
+    }
+
+    const transaction = await createTransaction({
+      userId,
+      eventId: event_id,
+      quantity: ticket_quantity,
+      voucherCode: voucher_code,
+    });
+
+    sendSuccess(res, 'Transaction created', transaction, 201);
+  } catch (error) {
+    console.error(error);
+    sendError(res, 'Failed to create transaction', 500);
+  }
+};
 
 export const uploadPaymentProof = async (req: AuthRequest, res: Response) => {
   try {
@@ -34,77 +63,3 @@ export const uploadPaymentProof = async (req: AuthRequest, res: Response) => {
   }
 };
 
-
-
-/*
-import { Request, Response } from 'express';
-import { createTransaction } from '../services/transaction.service';
-import prisma from '../../prisma/client';
-import { confirmTransaction } from '../services/transaction.service';
-import { AuthRequest } from '../middlewares/auth.middleware'; 
-import cron from 'node-cron';
-
-export const postTransaction = async (req: AuthRequest, res: Response) => {
-  try {
-    const { eventId, quantity } = req.body;
-
-    const userId = req.user?.id || 'some-user-id'; // ❗ganti saat JWT siap
-
-    if (!eventId || !quantity) {
-      return res.status(400).json({ message: 'Missing eventId or quantity' });
-    }
-
-    const transaction = await createTransaction({
-      userId,
-      eventId,
-      quantity,
-    });
-
-    return res.status(201).json(transaction);
-  } catch (error: any) {
-    console.error('Error creating transaction:', error);
-    return res.status(500).json({ message: error.message });
-  }
-};
-
-export const uploadPaymentProof = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-
-    if (!req.file) {
-      return res.status(400).json({ message: 'No file uploaded' });
-    }
-
-    const fileUrl = `/uploads/${req.file.filename}`;
-
-    const updated = await prisma.transaction.update({
-      where: { id },
-      data: {
-        payment_proof: fileUrl, // ✅ sesuaikan nama field di DB
-        status: 'waiting_confirm', // ✅ sesuai enum di schema kamu
-      },
-    });
-
-    res.status(200).json(updated);
-  } catch (err: any) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-export const handleTransactionConfirmation = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const { action } = req.body;
-
-    if (!['accept', 'reject'].includes(action)) {
-      return res.status(400).json({ message: 'Invalid action' });
-    }
-
-    const transaction = await confirmTransaction(id, action as 'accept' | 'reject');
-
-    return res.status(200).json(transaction);
-  } catch (err: any) {
-    return res.status(500).json({ message: err.message });
-  }
-};
-*/

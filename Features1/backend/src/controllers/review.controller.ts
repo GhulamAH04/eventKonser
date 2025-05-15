@@ -1,6 +1,9 @@
+//hapus middleware
+// review.controller.ts
+
 import { Request, Response } from "express";
 import prisma from "../../prisma/client";
-import { AuthRequest } from "../middlewares/auth.middleware"; // 🔥 Wajib
+import { AuthRequest } from "../middlewares/auth.middleware";
 
 export const postReview = async (req: AuthRequest, res: Response) => {
   try {
@@ -13,8 +16,8 @@ export const postReview = async (req: AuthRequest, res: Response) => {
 
     const existingReview = await prisma.review.findFirst({
       where: {
-        user_id: userId,         // ✅ GANTI dari userId
-        event_id: eventId,       // ✅ GANTI dari eventId
+        user_id: userId,         // GANTI dari userId
+        event_id: eventId,       // GANTI dari eventId
       },
     });
 
@@ -24,8 +27,8 @@ export const postReview = async (req: AuthRequest, res: Response) => {
 
     const review = await prisma.review.create({
       data: {
-        event_id: eventId,       // ✅ GANTI dari eventId
-        user_id: userId,         // ✅ GANTI dari userId
+        event_id: eventId,       //  GANTI dari eventId
+        user_id: userId,         //  GANTI dari userId
         rating,
         comment,
       },
@@ -43,7 +46,7 @@ export const getReviews = async (req: Request, res: Response) => {
 
     const reviews = await prisma.review.findMany({
       where: {
-        event_id: String(eventId), // ✅ sesuaikan nama field
+        event_id: String(eventId), //  sesuaikan nama field
       },
       include: {
         User: {

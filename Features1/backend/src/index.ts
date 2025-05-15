@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import eventRoutes from './routes/event.routes'; 
 import transactionRoutes from './routes/transaction.routes';
-import { startTransactionExpireJob } from './jobs/transaction-expire.job';
+import { startTransactionExpireJob } from './jobs/transactionExpire.job';
 import authRoutes from './routes/auth.routes';
 import { autoCancelTransactions } from './jobs/autoCancelTransaction';
 import organizerRoutes from './routes/organizer.routes';

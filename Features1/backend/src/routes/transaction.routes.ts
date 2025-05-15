@@ -1,13 +1,25 @@
+// routes/transaction.route.ts
+
 import { Router } from 'express';
-import { uploadPaymentProof } from '../controllers/transaction.controller';
-import { upload } from '../middlewares/upload.middleware'; // Middleware untuk handle file upload
+import { createTransactionController, uploadPaymentProof } from '../controllers/transaction.controller';
+import { upload } from '../middlewares/upload.middleware';
 
 const router = Router();
 
-// Route untuk upload payment proof dan otomatis menerima transaksi
+// ✅ Tambah route untuk membuat transaksi
+router.post('/', createTransactionController);
+
+// Route upload bukti pembayaran
 router.put('/:transactionId/upload-proof', upload.single('proof'), uploadPaymentProof);
 
 export default router;
+
+
+
+
+
+
+
 
 
 /*

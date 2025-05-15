@@ -1,5 +1,5 @@
 import { jwtDecode } from "jwt-decode";
-import { User } from "@/interface/user";
+import { User } from "@/interfaces";
 
 export const getToken = () => localStorage.getItem("token");
 

@@ -8,6 +8,8 @@ import Link from 'next/link';
 
 export default function TransactionListPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [search, setSearch] = useState('');
+
 
   useEffect(() => {
     async function fetchTransactions() {
@@ -23,7 +25,7 @@ export default function TransactionListPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-sky-50">
-      <Navbar />
+      <Navbar search={search} setSearch={setSearch} />
       <main className="flex flex-col items-center px-4 md:px-12 lg:px-24 py-12 gap-8 mt-24">
         <h1 className="text-3xl md:text-5xl font-bold text-sky-700 text-center">Transaksi Saya</h1>
 

@@ -6,30 +6,28 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-// mempunyai relasi Role, referral code, foto, kupon, point, event, review, dan transaksi
 
 model User {
-  id          String      @id @default(uuid())
-  full_name   String
-  email       String      @unique
-  password    String
-  role        UserRole
-  referral_code String    @unique
-  referred_by   String?
-  profile_picture String?
-  created_at  DateTime    @default(now())
-  Coupon      Coupon[]
-  Event       Event[]
-  Point       Point[]
+  id                                        String        @id @default(uuid())
+  full_name                                 String
+  email                                     String        @unique
+  password                                  String
+  role                                      UserRole
+  referral_code                             String        @unique
+  referred_by                               String?
+  profile_picture                           String?
+  created_at                                DateTime      @default(now())
+  isVerified                                Boolean       @default(false)
+  Coupon                                    Coupon[]
+  Event                                     Event[]
+  Point                                     Point[]
   ReferralLog_ReferralLog_referee_idToUser  ReferralLog[] @relation("ReferralLog_referee_idToUser")
   ReferralLog_ReferralLog_referrer_idToUser ReferralLog[] @relation("ReferralLog_referrer_idToUser")
-  Review      Review[]
-  Transaction Transaction[]
+  Review                                    Review[]
+  Transaction                               Transaction[]
 }
-
-
 model Event {
-  id              String        @id @default(uuid())
+  id              String   @id @default(uuid())
   organizer_id    String
   name            String
   description     String
@@ -40,12 +38,14 @@ model Event {
   end_date        DateTime
   total_seats     Int
   remaining_seats Int
-  created_at      DateTime      @default(now())
-  User            User          @relation(fields: [organizer_id], references: [id])
+  image_url       String?     // menambahkan gambar
+  created_at      DateTime @default(now())
+  User            User     @relation(fields: [organizer_id], references: [id])
   Review          Review[]
   Transaction     Transaction[]
   Voucher         Voucher[]
 }
+
 
 model Review {
   id         String   @id @default(uuid())
@@ -95,47 +95,44 @@ model Point {
 }
 
 model ReferralLog {
-  id          String   @id @default(uuid())
-  referrer_id String
-  referee_id  String
-  created_at  DateTime @default(now())
-  User_ReferralLog_referee_idToUser  User @relation("ReferralLog_referee_idToUser", fields: [referee_id], references: [id])
-  User_ReferralLog_referrer_idToUser User @relation("ReferralLog_referrer_idToUser", fields: [referrer_id], references: [id])
+  id                                 String   @id @default(uuid())
+  referrer_id                        String
+  referee_id                         String
+  created_at                         DateTime @default(now())
+  User_ReferralLog_referee_idToUser  User     @relation("ReferralLog_referee_idToUser", fields: [referee_id], references: [id])
+  User_ReferralLog_referrer_idToUser User     @relation("ReferralLog_referrer_idToUser", fields: [referrer_id], references: [id])
 }
 
 model Voucher {
   id              String   @id @default(cuid())
+  event_id        String
   code            String   @unique
   discount_amount Int
   start_date      DateTime
   end_date        DateTime
-  usage_limit     Int      // Membatasi jumlah penggunaan voucher
-  used_count      Int      @default(0) // Jumlah voucher yang sudah digunakan
-  event_id        String
-  event           Event    @relation(fields: [event_id], references: [id])
   created_at      DateTime @default(now())
+  usage_limit     Int
+  used_count      Int      @default(0)
+  event           Event    @relation(fields: [event_id], references: [id])
 }
 
-// status transaksi
 enum TransactionStatus {
-  waiting_payment // menunggu pembayaran
-  waiting_confirm // pembayaran terkonfirmasi
+  waiting_payment
+  waiting_confirm
   done
   rejected
   expired
   canceled
 }
 
-// dari mana point berasal
 enum PointSource {
-  referral 
+  referral
   refund
   redeem
 }
 
-
 enum UserRole {
   CUSTOMER
   ORGANIZER
-  ADMIN // mungkin perlu untuk mengurus websitenya
+  ADMIN
 }

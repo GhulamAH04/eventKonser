@@ -2,25 +2,37 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { fetchOrganizerProfile, OrganizerProfile } from '@/features/organizers/organizerService';
+import { fetchOrganizerProfile } from '@/features/organizers/organizerService';
 import Navbar from '@/components/NavBar';
+import { OrganizerProfile } from '@/interfaces/organizerProfile';
 import Footer from '@/components/Footer';
 
 export default function OrganizerProfilePage() {
-  const { organizerId } = useParams<{ organizerId: string }>();
+  const params = useParams();
+  const organizerId = params.organizerId as string;
   const [organizer, setOrganizer] = useState<OrganizerProfile | null>(null);
 
   useEffect(() => {
     async function loadOrganizer() {
+      console.log('📦 Fetching organizer with ID:', organizerId);
       const data = await fetchOrganizerProfile(organizerId);
+      console.log('✅ Organizer data fetched:', data);
       setOrganizer(data);
     }
-    if (organizerId) loadOrganizer();
+
+    if (organizerId) {
+      console.log('🧠 organizerId exists:', organizerId);
+      loadOrganizer();
+    } else {
+      console.warn('❌ organizerId missing');
+    }
   }, [organizerId]);
 
   if (!organizer) {
     return (
-      <div className="min-h-screen flex justify-center items-center">Loading organizer...</div>
+      <div className="min-h-screen flex justify-center items-center text-gray-600">
+        Loading organizer...
+      </div>
     );
   }
 
@@ -36,7 +48,8 @@ export default function OrganizerProfilePage() {
 
         {/* Average Rating */}
         <p className="text-lg text-gray-600">
-          ⭐ Average Rating: {organizer.averageRating.toFixed(1)}
+          ⭐ Average Rating:{' '}
+          {organizer.averageRating !== undefined ? organizer.averageRating.toFixed(1) : 'N/A'}
         </p>
 
         {/* Reviews */}

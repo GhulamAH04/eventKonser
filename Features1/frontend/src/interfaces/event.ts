@@ -6,6 +6,7 @@ export interface Promotion {
   endDate: string;
 }
 
+
 export interface Event {
   id: string;
   name: string;
@@ -15,6 +16,9 @@ export interface Event {
   startDate: string;
   endDate?: string;
   promotion?: Promotion[];
+  organizer_id: string;
+  remaining_seats: number;
+  image_url?: string;
 }
 
 export interface EventFormData {
