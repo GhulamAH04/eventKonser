@@ -4,11 +4,11 @@ import prisma from "../../prisma/client";
 
 export const startTransactionExpireJob = () => {
   cron.schedule("*/1 * * * *", async () => {
-    console.log("⏰ Checking expired & stale transactions...");
+    console.log(" Checking expired & stale transactions...");
 
     const now = new Date();
 
-    // 🔥 Expire transaksi yang belum upload bukti setelah 2 jam
+    //  Expire transaksi yang belum upload bukti setelah 2 jam
     const expired = await prisma.transaction.updateMany({
       where: {
         status: "waiting_payment",
@@ -22,10 +22,10 @@ export const startTransactionExpireJob = () => {
     });
 
     if (expired.count > 0) {
-      console.log(`💀 ${expired.count} transactions expired after 2 hours`);
+      console.log(` ${expired.count} transactions expired after 2 hours`);
     }
 
-    // 🔥 Cancel transaksi waiting_confirmation lebih dari 3 hari
+    //  Cancel transaksi waiting_confirmation lebih dari 3 hari
     const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000); // 3 hari lalu
 
     const toCancel = await prisma.transaction.findMany({
@@ -45,7 +45,7 @@ export const startTransactionExpireJob = () => {
         },
       });
 
-      // 🔥 Restore kursi event
+      //  Restore kursi event
       await prisma.event.update({
         where: { id: trx.event_id },
         data: {
@@ -55,7 +55,7 @@ export const startTransactionExpireJob = () => {
         },
       });
 
-      console.log(`🚫 Auto-canceled: Transaction ${trx.id} (no confirm in 3 days)`);
+      console.log(` Auto-canceled: Transaction ${trx.id} (no confirm in 3 days)`);
     }
   });
 };

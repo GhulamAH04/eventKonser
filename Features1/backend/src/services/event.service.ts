@@ -1,7 +1,7 @@
 import { Prisma, Event as PrismaEvent } from '@prisma/client';
 import prisma from '../../prisma/client';
 
-// ✅ Ambil semua event dengan search, filter, dan sort
+//  Ambil semua event dengan search, filter, dan sort
 export const getAllEvents = async (
   search?: string,
   category?: string,
@@ -50,7 +50,7 @@ export const getAllEvents = async (
   });
 };
 
-// ✅ Buat event baru + tambahkan promo jika ada
+//  Buat event baru + tambahkan promo jika ada
 export const createEvent = async (data: {
   name: string;
   description?: string;
@@ -78,7 +78,7 @@ export const createEvent = async (data: {
       end_date: new Date(data.endDate),
       total_seats: data.totalSeats,
       remaining_seats: data.totalSeats,
-      organizer_id: 'your-organizer-id', // ⚠️ Ganti dengan user login nanti
+      organizer_id: 'org-1',
     },
   });
 
@@ -99,7 +99,7 @@ export const createEvent = async (data: {
   return event;
 };
 
-// ✅ Ambil 1 event berdasarkan ID (dengan voucher jika ada)
+//  Ambil 1 event berdasarkan ID (dengan voucher jika ada)
 export const getEventById = async (id: string) => {
   return prisma.event.findUnique({
     where: { id },

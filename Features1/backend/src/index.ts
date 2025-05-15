@@ -28,6 +28,6 @@ app.use('/uploads', express.static('uploads'));
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  autoCancelTransactions();      // 🔥 Cron 3 hari auto cancel aktif
-  startTransactionExpireJob();   // 🔥 Timer expire 2 jam jalan
+  autoCancelTransactions();      //  Cron 3 hari auto cancel aktif
+  startTransactionExpireJob();   //  Timer expire 2 jam jalan
 });

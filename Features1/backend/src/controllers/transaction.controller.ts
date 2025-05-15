@@ -62,5 +62,37 @@ export const uploadPaymentProof = async (req: Request, res: Response) => {
     res.status(500).json({ message: err.message });
   }
 };
+export const getTransactionById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const trx = await prisma.transaction.findUnique({
+      where: { id },
+      include: {
+        Event: true,
+      },
+    });
+
+    if (!trx) {
+      return res.status(404).json({ message: 'Transaction not found' });
+    }
+
+    res.json({
+      id: trx.id,
+      status: trx.status,
+      quantity: trx.ticket_quantity,
+      totalPrice: trx.total_price,
+      paymentProofUrl: trx.payment_proof || null,
+      event: {
+        name: trx.Event.name,
+        location: trx.Event.location,
+        startDate: trx.Event.start_date,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to fetch transaction' });
+  }
+};
 
 

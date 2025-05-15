@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { postEvent, getEvents, getEvent } from '../controllers/event.controller';
 
+// matikan middleware
 /*
 import { verifyToken } from '../middlewares/auth.middleware';
 */

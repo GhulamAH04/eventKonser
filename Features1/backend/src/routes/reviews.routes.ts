@@ -12,7 +12,7 @@ router.post('/:eventId', async (req, res) => {
       data: {
         rating,
         comment,
-        user_id: userId, // 🔥 Harus dikasih dari frontend
+        user_id: userId, //  Harus dikasih dari frontend
         event_id: eventId,
       },
     });

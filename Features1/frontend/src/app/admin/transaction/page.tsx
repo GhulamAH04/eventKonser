@@ -1,3 +1,5 @@
+/*
+// jangan pakai tidak ada admin konfirmasi dari features 2
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -5,7 +7,7 @@ import {
   getAllTransactions,
   confirmTransaction,
   rejectTransaction,
-  Transaction,
+  UserTransaction,
 } from '@/features/transactions/transactionService';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/NavBar';
@@ -13,7 +15,7 @@ import Image from 'next/image';
 import toast from 'react-hot-toast';
 
 export default function AdminTransactionPage() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<UserTransaction[]>([]);
 
   useEffect(() => {
     async function fetchTransactions() {
@@ -48,10 +50,12 @@ export default function AdminTransactionPage() {
      toast.error('Gagal menolak transaksi.');
    }
  };
+ const [search, setSearch] = useState('');
+
 
   return (
     <div className="min-h-screen flex flex-col bg-sky-50">
-      <Navbar />
+      <Navbar search={search} setSearch={setSearch} />
       <main className="flex flex-col items-center px-4 md:px-12 lg:px-24 py-12 gap-8 mt-24">
         <h1 className="text-3xl md:text-5xl font-bold text-sky-700 text-center">
           Dashboard Ad min - Konfirmasi Pembayaran
@@ -113,3 +117,4 @@ export default function AdminTransactionPage() {
     </div>
   );
 }
+*/

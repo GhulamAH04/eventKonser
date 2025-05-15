@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 async function main() {
   const organizerId = 'org-1';
 
-  // ✅ Buat organizer karena belum ada
+  //  Buat organizer karena belum ada
   const existing = await prisma.user.findUnique({ where: { id: organizerId } });
 
   if (!existing) {
@@ -19,12 +19,12 @@ async function main() {
         created_at: new Date(),
       },
     });
-    console.log('✅ Organizer created');
+    console.log('Organizer created');
   } else {
-    console.log('ℹ️ Organizer already exists');
+    console.log('Organizer already exists');
   }
 
-  // 🔄 Event 1–15 
+  //  Event 1–15 
   const events = [
     {
       id: 'event-1',
@@ -222,7 +222,7 @@ async function main() {
     });
   }
 
-  // 🎁 Charity event (event-13)
+  // Charity event (event-13)
   await prisma.event.upsert({
     where: { id: 'event-13' },
     update: {},
