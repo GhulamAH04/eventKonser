@@ -31,6 +31,7 @@ export const getEvents = async (req: Request, res: Response) => {
 };
 
 // POST create new event
+// event.controller.ts
 export const postEvent = async (req: Request, res: Response) => {
   try {
     const { name, category, location, price, startDate, endDate, description, promotion } = req.body;
@@ -57,6 +58,7 @@ export const postEvent = async (req: Request, res: Response) => {
     sendError(res, 'Failed to create event', 500);
   }
 };
+
 
 // GET 1 event by ID
 export const getEvent = async (req: Request, res: Response) => {

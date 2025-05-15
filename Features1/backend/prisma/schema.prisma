@@ -60,7 +60,7 @@ model Review {
 
 model Transaction {
   id              String            @id @default(uuid())
-  user_id         String
+  user_id         String?
   event_id        String
   ticket_quantity Int
   locked_price    Int
@@ -70,7 +70,8 @@ model Transaction {
   created_at      DateTime          @default(now())
   updated_at      DateTime
   Event           Event             @relation(fields: [event_id], references: [id])
-  User            User              @relation(fields: [user_id], references: [id])
+  User            User?              @relation(fields: [user_id], references: [id])
+  guestEmail     String?
 }
 
 model Coupon {

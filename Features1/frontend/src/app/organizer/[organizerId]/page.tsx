@@ -16,15 +16,18 @@ export default function OrganizerProfilePage() {
     async function loadOrganizer() {
       console.log('📦 Fetching organizer with ID:', organizerId);
       const data = await fetchOrganizerProfile(organizerId);
-      console.log('✅ Organizer data fetched:', data);
+      console.log(' Organizer data fetched:', data);
+
+      if (!data || !data.id) {
+        console.warn(' Organizer data invalid:', data);
+      }
+
       setOrganizer(data);
     }
 
     if (organizerId) {
-      console.log('🧠 organizerId exists:', organizerId);
+      console.log(' organizerId exists:', organizerId);
       loadOrganizer();
-    } else {
-      console.warn('❌ organizerId missing');
     }
   }, [organizerId]);
 

@@ -23,6 +23,7 @@ app.use('/api/events', eventRoutes);
 app.use('/api/organizers', organizerRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use("/api/vouchers", voucherRoutes);
+app.use('/uploads', express.static('uploads'));
 
 
 app.listen(PORT, () => {

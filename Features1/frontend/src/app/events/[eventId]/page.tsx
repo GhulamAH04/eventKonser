@@ -71,7 +71,7 @@ export default function EventDetailPage() {
           {event.promotion && event.promotion.length > 0 && (
             <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
               <p className="text-yellow-700 font-medium">
-                🎉 Promo Available: <span className="font-bold">{event.promotion[0].code}</span> –
+                 Promo Available: <span className="font-bold">{event.promotion[0].code}</span> –
                 Get discount up to Rp {event.promotion[0].discount.toLocaleString('id-ID')}
               </p>
               <p className="text-xs text-yellow-500 mt-1">

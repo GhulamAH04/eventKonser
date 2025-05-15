@@ -1,9 +1,5 @@
 import axios from "axios";
-
-interface CreateTransactionInput {
-  event_id: string;
-  ticket_quantity: number;
-}
+import { CreateTransactionInput, UserTransaction } from "@/interfaces/transaction";
 
 export const createTransaction = async (input: CreateTransactionInput) => {
   try {
@@ -15,22 +11,12 @@ export const createTransaction = async (input: CreateTransactionInput) => {
   }
 };
 
-export interface Transaction {
-  id: string;
-  eventName: string;
-  userName?: string;
-  ticket_quantity: number;
-  total_price: number;
-  status: string;
-  payment_proof?: string;
-}
-
-export const getUserTransactions = async (): Promise<Transaction[]> => {
+export const getUserTransactions = async (): Promise<UserTransaction[]> => {
   const res = await axios.get('/transactions');
   return res.data.data;
 };
 
-export const getAllTransactions = async (): Promise<Transaction[]> => {
+export const getAllTransactions = async (): Promise<UserTransaction[]> => {
   const res = await axios.get('/admin/transactions');
   return res.data.data;
 };
