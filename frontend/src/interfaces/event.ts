@@ -6,7 +6,6 @@ export interface Promotion {
   endDate: string;
 }
 
-
 export interface Event {
   id: string;
   name: string;
