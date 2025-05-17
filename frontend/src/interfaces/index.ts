@@ -6,3 +6,4 @@ export * from "./user";
 export * from './searchBar';
 export * from "./navbarProps"
 export * from "./raw"
+export * from "./authForm"

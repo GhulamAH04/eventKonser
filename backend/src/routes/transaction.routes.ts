@@ -3,8 +3,13 @@ import multer from 'multer';
 import {
   createTransactionController,
   uploadPaymentProof,
-  getTransactionById, // ⬅️ pindahkan ke sini
+  getTransactionById,
+  getTransactionsByEvent
 } from '../controllers/transaction.controller';
+
+import { getTransactionsByOrganizer } from '../controllers/transaction.controller';
+
+import { updateTransactionStatus } from '../controllers/transaction.controller';
 
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
@@ -17,5 +22,12 @@ router.post('/:id/upload-proof', upload.single('payment_proof'), uploadPaymentPr
 
 // Get transaksi berdasarkan ID
 router.get('/:id', getTransactionById); // ⬅️ pindahkan ke atas sebelum export
+
+
+router.patch('/transactions/:id/status', updateTransactionStatus);
+
+router.get('/transactions/organizer', getTransactionsByOrganizer);
+
+router.get('/transactions/event/:eventId', getTransactionsByEvent);
 
 export default router;

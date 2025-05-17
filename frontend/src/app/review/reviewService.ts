@@ -1,13 +1,25 @@
-import axios from 'axios';
+import api from "@/lib/axios";
 
-export async function submitReview(eventId: string, rating: number, comment: string): Promise<void> {
-  try {
-    await axios.post(`/api/reviews/${eventId}`, {
-      rating,
-      comment,
-    });
-  } catch (error) {
-    console.error('Failed to submit review', error);
-    throw error;
-  }
-}
+// Submit review dari user
+export const submitReview = async (
+  eventId: string,
+  data: { rating: number; comment: string }
+) => {
+  return await api.post(`/reviews/${eventId}`, data);
+};
+
+// Ambil review untuk 1 event
+export const getReviews = async (eventId: string) => {
+  return await api.get(`/reviews/${eventId}`);
+};
+
+// Ambil semua review untuk organizer tertentu
+export const getReviewsByOrganizer = async (organizerId: string) => {
+  return await api.get(`/reviews/organizers/${organizerId}`);
+};
+
+// Ambil profil organizer (jika kamu ingin pakai endpoint gabungan profil + review)
+export const getOrganizerProfile = async (organizerId: string) => {
+  return await api.get(`/organizers/${organizerId}/profile`);
+};
+

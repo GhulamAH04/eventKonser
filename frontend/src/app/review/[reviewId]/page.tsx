@@ -2,30 +2,26 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { submitReview } from '@/features/reviews/reviewService';
+import { submitReview } from '@/app/review/reviewService'; // pastikan path ini sesuai
 import Navbar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 
 export default function SubmitReviewPage() {
-  const { eventId } = useParams<{ eventId: string }>();
+  const { reviewId } = useParams<{ reviewId: string }>();
   const router = useRouter();
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!eventId) return;
+    if (!reviewId) return;
     setIsSubmitting(true);
     try {
-      await submitReview(eventId, {
-        rating,
-        comment,
-        userId: 'your-user-id-here', // 🔥 Ganti dengan real userId dari JWT session login
-      });
+      await submitReview(reviewId, { rating, comment });
       alert('Review submitted successfully!');
       router.push('/');
     } catch (error) {
-      console.error(error)
+      console.error(error);
       alert('Failed to submit review.');
     } finally {
       setIsSubmitting(false);

@@ -9,6 +9,7 @@ import { createTransaction } from '@/features/transactions/transactionService';
 import { validateVoucher } from '@/features/vouchers/voucherService';
 import { Event } from '@/interfaces';
 import toast from 'react-hot-toast';
+import { jwtDecode } from 'jwt-decode';
 
 export default function CheckoutPage() {
   const { id } = useParams<{ id: string }>();
@@ -23,6 +24,24 @@ export default function CheckoutPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
   const [search, setSearch] = useState('');
+  const [pointsUsed, setPointsUsed] = useState(0);
+  const [pointBalance, setPointBalance] = useState(0);
+  const [userId, setUserId] = useState<string | null>(null);
+
+
+  // Fetch user data if logged in
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      try {
+        const decoded = jwtDecode<{ id: string; role: string; points?: number }>(token);
+        setUserId(decoded.id);
+        setPointBalance(decoded.points || 0);
+      } catch (error) {
+        console.error('Failed to decode token', error);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchEvent() {
@@ -78,8 +97,12 @@ export default function CheckoutPage() {
       await createTransaction({
         event_id: id,
         ticket_quantity: quantity,
-        guest_email: guestEmail, // ✅ KIRIM EMAIL TAMU
+        guest_email: guestEmail,
+        used_points: pointsUsed,
+        final_price: finalPrice,
+        voucher_code: voucherCode,
       });
+
 
       toast.success(`Berhasil membeli ${quantity} tiket!`);
       router.push('/payment-success');

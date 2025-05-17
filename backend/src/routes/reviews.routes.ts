@@ -1,27 +1,13 @@
 import express from 'express';
-import prisma from '../../prisma/client';
+import { postReview, getReviews } from '../controllers/review.controller';
+import { getReviewsForOrganizer } from '../controllers/review.controller';
+import { getOrganizerProfileWithReviews } from '../controllers/organizer.controller';
 
 const router = express.Router();
 
-router.post('/:eventId', async (req, res) => {
-  try {
-    const { eventId } = req.params;
-    const { rating, comment, userId } = req.body;
-
-    const review = await prisma.review.create({
-      data: {
-        rating,
-        comment,
-        user_id: userId, //  Harus dikasih dari frontend
-        event_id: eventId,
-      },
-    });
-
-    res.status(201).json(review);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Failed to submit review' });
-  }
-});
+router.post('/:eventId', postReview);
+router.get('/:eventId', getReviews);
+router.get('/organizers/:id/reviews', getReviewsForOrganizer);
+router.get('/organizers/:id/profile', getOrganizerProfileWithReviews);
 
 export default router;

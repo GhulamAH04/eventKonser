@@ -47,3 +47,58 @@ export const getOrganizerById = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Failed to fetch organizer' });
   }
 };
+
+export const getOrganizerProfileWithReviews = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    // Ambil data user (organizer)
+    const organizer = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        full_name: true,
+      },
+    });
+
+    if (!organizer) {
+      return res.status(404).json({ message: 'Organizer not found' });
+    }
+
+    // Ambil review dari semua event yang dibuat organizer ini
+    const reviews = await prisma.review.findMany({
+      where: {
+        Event: {
+          organizer_id: id,
+        },
+      },
+      select: {
+        id: true,
+        rating: true,
+        comment: true,
+        User: {
+          select: { full_name: true },
+        },
+      },
+    });
+
+    const averageRating =
+      reviews.length > 0
+        ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+        : null;
+
+    res.json({
+      ...organizer,
+      reviews: reviews.map((r) => ({
+        id: r.id,
+        rating: r.rating,
+        comment: r.comment,
+        userName: r.User.full_name,
+      })),
+      averageRating,
+    });
+  } catch (error) {
+    console.error('Failed to get organizer profile with reviews:', error);
+    res.status(500).json({ message: 'Failed to fetch organizer profile' });
+  }
+};

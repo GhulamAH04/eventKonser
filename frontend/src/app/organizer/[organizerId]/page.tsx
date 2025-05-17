@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { fetchOrganizerProfile } from '@/features/organizers/organizerService';
 import Navbar from '@/components/NavBar';
 import { OrganizerProfile } from '@/interfaces/organizerProfile';
 import Footer from '@/components/Footer';
+import { getOrganizerProfile } from '@/app/review/reviewService';
 
 export default function OrganizerProfilePage() {
   const params = useParams();
@@ -14,19 +14,11 @@ export default function OrganizerProfilePage() {
 
   useEffect(() => {
     async function loadOrganizer() {
-      console.log('📦 Fetching organizer with ID:', organizerId);
-      const data = await fetchOrganizerProfile(organizerId);
-      console.log(' Organizer data fetched:', data);
-
-      if (!data || !data.id) {
-        console.warn(' Organizer data invalid:', data);
-      }
-
-      setOrganizer(data);
+      const res = await getOrganizerProfile(organizerId); // ✅ Panggil fungsi baru
+      setOrganizer(res.data);
     }
 
     if (organizerId) {
-      console.log(' organizerId exists:', organizerId);
       loadOrganizer();
     }
   }, [organizerId]);

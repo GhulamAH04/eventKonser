@@ -60,6 +60,7 @@ export const createEvent = async (data: {
   startDate: string;
   endDate: string;
   totalSeats: number;
+  organizer_id: string;
   promotion?: {
     code: string;
     discount: number;

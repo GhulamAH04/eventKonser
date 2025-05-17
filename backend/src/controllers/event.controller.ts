@@ -9,7 +9,32 @@ import {
 
 // Import helper untuk kirim response sukses/error
 import { sendSuccess, sendError } from '../utils/responseHelper';
+import jwt from 'jsonwebtoken'
+import prisma from '../../prisma/client';
 
+const JWT_SECRET = process.env.JWT_SECRET || 'secret';
+
+export const getEventsByOrganizer = async (req: Request, res: Response) => {
+  try {
+    // Ambil token dari header
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+    // Decode token untuk ambil organizer_id
+    const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
+
+    // Cari event yang dimiliki oleh organizer tersebut
+    const events = await prisma.event.findMany({
+      where: { organizer_id: decoded.id },
+      orderBy: { start_date: "desc" },
+    });
+
+    res.status(200).json(events);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error getting events" });
+  }
+};
 
 // GET all events (dengan filter query: search, category, location, sortBy)
 export const getEvents = async (req: Request, res: Response) => {
@@ -39,6 +64,7 @@ export const getEvents = async (req: Request, res: Response) => {
 };
 
 
+
 // POST create new event
 export const postEvent = async (req: Request, res: Response) => {
   try {
@@ -51,6 +77,7 @@ export const postEvent = async (req: Request, res: Response) => {
       startDate,
       endDate,
       description,
+      organizer_id,
       promotion
     } = req.body;
 
@@ -69,6 +96,7 @@ export const postEvent = async (req: Request, res: Response) => {
       endDate,
       description,
       promotion,
+      organizer_id,
       totalSeats: 100, // default seat di-hardcode
     });
 
@@ -99,5 +127,37 @@ export const getEvent = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     sendError(res, 'Failed to get event detail', 500);
+  }
+};
+export const updateEvent = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const {
+      name,
+      category,
+      location,
+      price,
+      startDate,
+      endDate,
+      description,
+    } = req.body;
+
+    const updatedEvent = await prisma.event.update({
+      where: { id },
+      data: {
+        name,
+        category,
+        location,
+        price: Number(price),
+        start_date: new Date(startDate),
+        end_date: new Date(endDate),
+        description,
+      },
+    });
+
+    res.status(200).json(updatedEvent);
+  } catch (error) {
+    console.error("Failed to update event:", error);
+    res.status(500).json({ message: "Failed to update event" });
   }
 };

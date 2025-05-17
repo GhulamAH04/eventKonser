@@ -72,6 +72,8 @@ model Transaction {
   Event           Event             @relation(fields: [event_id], references: [id])
   User            User?              @relation(fields: [user_id], references: [id])
   guestEmail     String?
+  voucher_code    String?    
+  used_points     Int?       
 }
 
 model Coupon {

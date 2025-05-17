@@ -5,17 +5,20 @@ import { useParams, useRouter } from 'next/navigation';
 import Navbar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import { getEventById } from '@/features/events/eventService';
+import { getReviews } from '@/app/review/reviewService'; 
 import { Event } from '@/interfaces';
 import Link from 'next/link';
+import { Review } from '@/interfaces';
 
 export default function EventDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [event, setEvent] = useState<Event | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [reviews, setReviews] = useState<Review[]>([]);
 
   useEffect(() => {
-    const token = localStorage.getItem('token'); // JWT token
+    const token = localStorage.getItem('token');
     setIsLoggedIn(!!token);
   }, []);
 
@@ -29,6 +32,16 @@ export default function EventDetailPage() {
       }
     }
     if (id) fetchEvent();
+  }, [id]);
+
+  useEffect(() => {
+    async function loadReviews() {
+      if (id) {
+        const res = await getReviews(id);
+        setReviews(res.data);
+      }
+    }
+    loadReviews();
   }, [id]);
 
   if (!event) {
@@ -71,36 +84,30 @@ export default function EventDetailPage() {
           {event.promotion && event.promotion.length > 0 && (
             <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
               <p className="text-yellow-700 font-medium">
-                 Promo Available: <span className="font-bold">{event.promotion[0].code}</span> –
-                Get discount up to Rp {event.promotion[0].discount.toLocaleString('id-ID')}
+                Promo Available: <span className="font-bold">{event.promotion[0].code}</span> – Get
+                discount up to Rp {event.promotion[0].discount.toLocaleString('id-ID')}
               </p>
               <p className="text-xs text-yellow-500 mt-1">
                 Valid until {new Date(event.promotion[0].endDate).toLocaleDateString()}
               </p>
             </div>
           )}
+
           {/* Price & Remaining Seats */}
           <div className="flex flex-col items-end gap-2">
             <span className="text-sky-600 font-bold text-2xl">
-              {typeof event.price === 'number'
-                ? event.price === 0
-                  ? 'FREE'
-                  : `Rp ${event.price.toLocaleString('id-ID')}`
-                : 'Price not available'}
+              {event.price === 0 ? 'FREE' : `Rp ${event.price.toLocaleString('id-ID')}`}
             </span>
-
             <div className="text-sm text-gray-500 mt-2">
               Remaining Seats:{' '}
               <span className="font-semibold text-sky-700">{event.remaining_seats}</span>
             </div>
-
             <Link
               href={`/events/${event.id}/checkout`}
               className="mt-4 inline-block bg-sky-600 hover:bg-sky-700 text-white px-6 py-2 rounded-full transition"
             >
               Buy Ticket
             </Link>
-
             <Link
               href={`/organizers/${event.organizer_id}`}
               className="text-sky-500 hover:underline text-sm font-semibold mt-2"
@@ -108,14 +115,8 @@ export default function EventDetailPage() {
               View Organizer Profile →
             </Link>
           </div>
-          <Link
-            href={`/events/${event.id}/checkout`}
-            className="mt-4 inline-block bg-sky-600 hover:bg-sky-700 text-white px-6 py-2 rounded-full transition"
-          >
-            Buy Ticket
-          </Link>
 
-          {/* ✅ Buy Ticket Button */}
+          {/* ✅ Button Beli Tiket (Login only) */}
           {isLoggedIn && event.remaining_seats > 0 && (
             <button
               onClick={() => router.push(`/transactions/create/${event.id}`)}
@@ -132,6 +133,21 @@ export default function EventDetailPage() {
               </Link>{' '}
               to buy tickets.
             </p>
+          )}
+        </div>
+
+        {/* ✅ Section: Event Reviews */}
+        <div className="w-full max-w-3xl mt-8 bg-white rounded-xl shadow p-6">
+          <h2 className="text-xl font-bold text-sky-700 mb-4">Event Reviews</h2>
+          {reviews.length === 0 ? (
+            <p className="text-gray-500">Belum ada review untuk event ini.</p>
+          ) : (
+            reviews.map((r) => (
+              <div key={r.id} className="border-b py-3">
+                <p className="text-yellow-600 font-semibold">⭐ {r.rating}</p>
+                <p className="text-gray-700">{r.comment || '-'}</p>
+              </div>
+            ))
           )}
         </div>
       </main>

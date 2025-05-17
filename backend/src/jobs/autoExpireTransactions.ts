@@ -1,6 +1,7 @@
 // backend/src/jobs/autoExpireTransactions.ts
 
 import prisma from '../../prisma/client';  // Sesuaikan dengan prisma model
+import { rollbackTransaction } from '../services/transaction.service';
 
 // Set interval untuk cek setiap 1 jam
 setInterval(async () => {
@@ -13,10 +14,7 @@ setInterval(async () => {
 
   for (let transaction of expiredTransactions) {
     // Update status ke 'expired' setelah 2 jam
-    await prisma.transaction.update({
-      where: { id: transaction.id },
-      data: { status: 'expired' },
-    });
+    await rollbackTransaction(transaction.id);
 
     // Rollback tiket yang digunakan
     await prisma.event.update({

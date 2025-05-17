@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast";
 import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import { Event } from "@/interfaces";
+import { jwtDecode } from "jwt-decode";
 
 export default function CreateEventPage() {
   const router = useRouter();
@@ -17,8 +18,16 @@ export default function CreateEventPage() {
     }
   ) => {
     try {
-      await api.post("/events", {
+      const token = localStorage.getItem('accessToken');
+      const decoded = token ? jwtDecode<{ id: string }>(token) : null;
+
+      if (!decoded) {
+        toast.error('Unauthorized');
+        return;
+      }
+      await api.post('/events', {
         ...data,
+        organizer_id: decoded.id,
         price: Number(data.price),
         promotion: data.promotionCode
           ? {
@@ -29,6 +38,7 @@ export default function CreateEventPage() {
             }
           : undefined,
       });
+
       toast.success("Event created!");
       router.push("/dashboard");
     } catch {

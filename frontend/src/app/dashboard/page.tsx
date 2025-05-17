@@ -19,18 +19,18 @@ export default function DashboardPage() {
   const router = useRouter();
   const user = getUserFromToken();
 
-  const fetchEvents = useCallback(async () => {
-    if (!user) return;
-    setLoading(true);
-    try {
-      const res = await api.get(`/organizer/events?userId=${user.id}`);
-      setEvents(res.data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
+ const fetchEvents = useCallback(async () => {
+   setLoading(true);
+   try {
+     const res = await api.get('/events/organizer');
+     setEvents(res.data);
+   } catch (error) {
+     console.error(error);
+   } finally {
+     setLoading(false);
+   }
+ }, []);
+
 
   useEffect(() => {
     fetchEvents();
@@ -65,7 +65,15 @@ export default function DashboardPage() {
             <h1 className="text-2xl font-bold">Welcome, {user.email} 👋</h1>
             <p className="text-gray-600 text-sm">Role: {user.role}</p>
           </div>
-          <LogoutButton />
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => router.push('/create-event')}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+            >
+              + Create Event
+            </button>
+            <LogoutButton />
+          </div>
         </div>
 
         {loading ? (

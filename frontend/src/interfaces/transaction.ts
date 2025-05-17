@@ -1,11 +1,15 @@
-//  Interface untuk input transaksi (digunakan saat POST /transactions)
+// Digunakan saat POST /transactions
 export interface CreateTransactionInput {
   event_id: string;
   ticket_quantity: number;
-  guest_email?: string; // opsional untuk guest checkout
+  guest_email?: string;
+  user_id?: string;
+  voucher_code?: string;
+  used_points?: number;
+  final_price?: number;
 }
 
-//  Interface untuk response transaksi milik user (dengan eventName dan userName)
+// Digunakan saat GET transaksi milik user (misalnya /me/transactions)
 export interface UserTransaction {
   id: string;
   eventName: string;
@@ -16,16 +20,26 @@ export interface UserTransaction {
   payment_proof?: string;
 }
 
-//  Interface lain untuk transaksi detail 
+// Digunakan untuk halaman detail transaksi /transactions/:id
 export interface TransactionDetail {
+  id: string;
+  status: string;
+  ticket_quantity: number;
+  total_price: number;
+  payment_proof?: string;
+  guestEmail?: string;
+  Event: {
+    name: string;
+    location: string;
+    startDate?: string;
+  };
+}
+
+// Digunakan untuk GET semua transaksi dari 1 event
+export interface EventTransaction {
   id: string;
   status: string;
   quantity: number;
   totalPrice: number;
   paymentProofUrl?: string;
-  event: {
-    name: string;
-    location: string;
-    startDate: string;
-  };
 }
