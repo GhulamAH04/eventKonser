@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import prisma from "../../prisma/client";  // Import Prisma Client
+import prisma from "../prisma/client";  // Import Prisma Client
 
 // Fungsi untuk membuat voucher baru
 export const createVoucher = async (

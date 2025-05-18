@@ -1,6 +1,6 @@
 
 import cron from "node-cron";
-import prisma from "../../prisma/client";
+import prisma from "../prisma/client";
 
 
 export const startTransactionExpireJob = () => {

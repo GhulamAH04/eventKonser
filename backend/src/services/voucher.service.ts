@@ -1,6 +1,7 @@
 // backend/src/services/voucher.service.ts
 
-import prisma from '../../prisma/client';
+import prisma from '../prisma/client';
+
 
 // Fungsi untuk memvalidasi voucher
 export const validateVoucher = async (code: string, eventId: string) => {

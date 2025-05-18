@@ -1,7 +1,8 @@
 // hapus middleware
 
 import { Request, Response } from 'express';
-import prisma from '../../prisma/client';  // Sesuaikan dengan prisma model
+import prisma from '../prisma/client';
+ // Sesuaikan dengan prisma model
 import { TransactionStatus } from '@prisma/client'; // Import enum dari Prisma
 import { sendSuccess, sendError } from '../utils/responseHelper';
 import { createTransaction } from '../services/transaction.service';

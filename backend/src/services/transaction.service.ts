@@ -1,4 +1,5 @@
-import prisma from '../../prisma/client';
+import prisma from '../prisma/client';
+
 import { validateVoucher } from './voucher.service';
 
 interface CreateTransactionInput {

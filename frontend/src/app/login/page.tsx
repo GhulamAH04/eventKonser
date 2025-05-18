@@ -60,7 +60,7 @@ export default function LoginPage() {
 */
 
 
-// ✅ Login Page - app/login/page.tsx
+//  Login Page - app/login/page.tsx
 
 "use client";
 
@@ -68,11 +68,12 @@ import { useState } from "react";
 import Navbar from "@/components/NavBar";
 export default function LoginPage() {
   const [role, setRole] = useState<"user" | "organizer">("user");
+  const [search, setSearch] = useState('');
 
   return (
     <main className="min-h-screen grid grid-cols-1 md:grid-cols-2">
       {/* Navbar */}
-      <Navbar /> {/* Menambahkan Navbar di bagian atas */}
+      <Navbar search={search} setSearch={setSearch} /> {/* Menambahkan Navbar di bagian atas */}
       {/* Left Side */}
       <div className="bg-blue-100 p-10 flex flex-col justify-center">
         <h1 className="text-4xl font-bold mb-4">Welcome Back!</h1>

@@ -1,5 +1,6 @@
 import { Prisma, Event as PrismaEvent } from '@prisma/client';
-import prisma from '../../prisma/client';
+import prisma from '../prisma/client';
+
 
 //  Ambil semua event dengan search, filter, dan sort
 export const getAllEvents = async (

@@ -10,7 +10,8 @@ import {
 // Import helper untuk kirim response sukses/error
 import { sendSuccess, sendError } from '../utils/responseHelper';
 import jwt from 'jsonwebtoken'
-import prisma from '../../prisma/client';
+import prisma from '../prisma/client';
+
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import prisma from '../../prisma/client';
+import prisma from '../prisma/client';
+
 
 // Controller untuk ambil data organizer (user) berdasarkan ID
 export const getOrganizerById = async (req: Request, res: Response) => {

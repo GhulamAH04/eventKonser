@@ -1,6 +1,7 @@
 // backend/src/jobs/autoCancelTransactions.ts
 
-import prisma from '../../prisma/client';
+import prisma from '../prisma/client';
+
 import cron from 'node-cron';
 
 // Auto-cancel transaksi jika 3 hari belum dikonfirmasi

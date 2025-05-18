@@ -1,6 +1,7 @@
 // backend/src/jobs/autoExpireTransactions.ts
 
-import prisma from '../../prisma/client';  // Sesuaikan dengan prisma model
+import prisma from '../prisma/client';
+ // Sesuaikan dengan prisma model
 import { rollbackTransaction } from '../services/transaction.service';
 
 // Set interval untuk cek setiap 1 jam
