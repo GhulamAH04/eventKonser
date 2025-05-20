@@ -1,4 +1,4 @@
-import api from '@/lib/axios';
+import api from "@/lib/api";
 import { Event } from '@/interfaces';
 import { RawEvent, RawVoucher } from '@/interfaces/raw';
 

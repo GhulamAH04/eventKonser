@@ -2,7 +2,7 @@
 
 import EventForm from "@/components/EventForm";
 import { toast } from "react-hot-toast";
-import api from "@/lib/axios";
+import api from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { Event } from "@/interfaces";
 import { jwtDecode } from "jwt-decode";
@@ -18,7 +18,7 @@ export default function CreateEventPage() {
     }
   ) => {
     try {
-      const token = localStorage.getItem('accessToken');
+      const token = localStorage.getItem('token');
       const decoded = token ? jwtDecode<{ id: string }>(token) : null;
 
       if (!decoded) {

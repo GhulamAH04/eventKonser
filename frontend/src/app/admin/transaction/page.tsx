@@ -1,14 +1,10 @@
-/*
+
 // jangan pakai tidak ada admin konfirmasi dari features 2
 'use client';
 
 import { useEffect, useState } from 'react';
-import {
-  getAllTransactions,
-  confirmTransaction,
-  rejectTransaction,
-  UserTransaction,
-} from '@/features/transactions/transactionService';
+import { getAllTransactions, confirmTransaction, rejectTransaction } from '@/features/transactions/transactionService';
+import { UserTransaction } from '@/interfaces/transaction';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/NavBar';
 import Image from 'next/image';
@@ -117,4 +113,3 @@ export default function AdminTransactionPage() {
     </div>
   );
 }
-*/

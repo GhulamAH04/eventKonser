@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from "@/lib/api";
 
 export interface ReviewPayload {
   rating: number;
@@ -8,7 +8,7 @@ export interface ReviewPayload {
 
 export async function submitReview(eventId: string, reviewData: ReviewPayload): Promise<void> {
   try {
-    await axios.post(`/api/reviews/${eventId}`, reviewData);
+    await api.post(`/api/reviews/${eventId}`, reviewData);
   } catch (error) {
     console.error('Failed to submit review', error);
     throw error;

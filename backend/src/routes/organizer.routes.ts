@@ -1,3 +1,5 @@
+// src/routes/organizer.routes.ts
+
 import express from 'express';
 import { getOrganizerById } from '../controllers/organizer.controller'; //  ambil handler dari controller
 

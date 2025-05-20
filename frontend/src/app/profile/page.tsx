@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react';
 import Navbar from '@/components/NavBar';
 import Footer from '@/components/Footer';
-import axios from 'axios';
+import api from '@/lib/api';
+
 import toast from 'react-hot-toast';
 import Image from 'next/image';
+// import { User } from '@/interfaces';
 
 interface UserProfile {
   id: string;
@@ -16,11 +18,12 @@ interface UserProfile {
 
 export default function ProfilePage() {
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     async function fetchUser() {
       try {
-        const res = await axios.get('/api/profile'); // sesuaikan route backend kamu
+        const res = await api.get('/api/profile'); // sesuaikan route backend kamu
         setUser(res.data.data);
       } catch (error) {
         console.error('Failed to fetch profile:', error);
@@ -35,7 +38,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-sky-50">
-      <Navbar />
+      <Navbar search={search} setSearch={setSearch} />
       <main className="flex flex-col items-center px-4 md:px-12 lg:px-24 py-12 gap-8 mt-24">
         <h1 className="text-3xl md:text-5xl font-bold text-sky-700 text-center">Profil Saya</h1>
 
@@ -49,12 +52,12 @@ export default function ProfilePage() {
             />
             */
             <Image
-  src={user.profile_picture}
-  alt="Preview"
-  width={300}
-  height={300}
-  className="h-64 object-contain rounded-lg border mt-4"
-/>
+              src={user.profile_picture}
+              alt="Preview"
+              width={300}
+              height={300}
+              className="h-64 object-contain rounded-lg border mt-4"
+            />
           )}
 
           <div className="flex flex-col items-center gap-2">

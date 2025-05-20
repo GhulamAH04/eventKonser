@@ -31,7 +31,7 @@ export default function CheckoutPage() {
 
   // Fetch user data if logged in
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('token');
     if (token) {
       try {
         const decoded = jwtDecode<{ id: string; role: string; points?: number }>(token);

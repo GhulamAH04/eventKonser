@@ -1,9 +1,9 @@
-import axios from "axios";
+import api from "@/lib/api";
 import { CreateTransactionInput, UserTransaction } from "@/interfaces/transaction";
 
 export const createTransaction = async (input: CreateTransactionInput) => {
   try {
-    const res = await axios.post("/transactions", input);
+    const res = await api.post("/transactions", input);
     return res.data;
   } catch (error) {
     console.error("Failed to create transaction:", error);
@@ -12,19 +12,19 @@ export const createTransaction = async (input: CreateTransactionInput) => {
 };
 
 export const getUserTransactions = async (): Promise<UserTransaction[]> => {
-  const res = await axios.get('/transactions');
+  const res = await api.get('/transactions');
   return res.data.data;
 };
 
 export const getAllTransactions = async (): Promise<UserTransaction[]> => {
-  const res = await axios.get('/admin/transactions');
+  const res = await api.get('/admin/transactions');
   return res.data.data;
 };
 
 export const confirmTransaction = async (transactionId: string) => {
-  await axios.patch(`/admin/transactions/${transactionId}/confirm`);
+  await api.patch(`/admin/transactions/${transactionId}/confirm`);
 };
 
 export const rejectTransaction = async (transactionId: string) => {
-  await axios.patch(`/admin/transactions/${transactionId}/reject`);
+  await api.patch(`/admin/transactions/${transactionId}/reject`);
 };

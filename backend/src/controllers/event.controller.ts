@@ -1,46 +1,21 @@
+// backend/src/controllers/event.controller.ts
 import { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
+import prisma from '../prisma/client';
 
-// Import function dari service layer
 import {
   createEvent,
   getAllEvents as serviceGetAllEvents,
   getEventById,
 } from '../services/event.service';
 
-// Import helper untuk kirim response sukses/error
 import { sendSuccess, sendError } from '../utils/responseHelper';
-import jwt from 'jsonwebtoken'
-import prisma from '../prisma/client';
-
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 
-export const getEventsByOrganizer = async (req: Request, res: Response) => {
-  try {
-    // Ambil token dari header
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) return res.status(401).json({ message: "Unauthorized" });
-
-    // Decode token untuk ambil organizer_id
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
-
-    // Cari event yang dimiliki oleh organizer tersebut
-    const events = await prisma.event.findMany({
-      where: { organizer_id: decoded.id },
-      orderBy: { start_date: "desc" },
-    });
-
-    res.status(200).json(events);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error getting events" });
-  }
-};
-
-// GET all events (dengan filter query: search, category, location, sortBy)
+// ✅ GET all events (filter)
 export const getEvents = async (req: Request, res: Response) => {
   try {
-    // Ambil query parameter dari URL, default ke string kosong jika tidak diisi
     const {
       search = '',
       category = '',
@@ -48,15 +23,13 @@ export const getEvents = async (req: Request, res: Response) => {
       sortBy = 'newest',
     } = req.query;
 
-    // Panggil service untuk ambil semua event dengan filter tersebut
     const events = await serviceGetAllEvents(
       search as string,
       category as string,
       location as string,
-      sortBy as 'newest' | 'soonest' | 'cheapest' // pastikan nilai sortBy sesuai enum yang diterima service
+      sortBy as 'newest' | 'soonest' | 'cheapest'
     );
 
-    // Kirim response sukses dengan data events
     sendSuccess(res, 'Get all events successful', events);
   } catch (error) {
     console.error(error);
@@ -64,12 +37,22 @@ export const getEvents = async (req: Request, res: Response) => {
   }
 };
 
+// ✅ GET 1 event
+export const getEvent = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const event = await getEventById(id);
+    if (!event) return sendError(res, 'Event not found', 404);
+    sendSuccess(res, 'Get event detail successful', event);
+  } catch (error) {
+    console.error(error);
+    sendError(res, 'Failed to get event detail', 500);
+  }
+};
 
-
-// POST create new event
+// ✅ POST event
 export const postEvent = async (req: Request, res: Response) => {
   try {
-    // Ambil data event dari request body
     const {
       name,
       category,
@@ -78,16 +61,14 @@ export const postEvent = async (req: Request, res: Response) => {
       startDate,
       endDate,
       description,
+      promotion,
       organizer_id,
-      promotion
     } = req.body;
 
-    // Validasi: beberapa field wajib harus diisi
     if (!name || !category || !location || !startDate || !endDate) {
       return sendError(res, 'Missing required fields', 400);
     }
 
-    // Panggil service untuk membuat event baru
     const event = await createEvent({
       name,
       category,
@@ -98,38 +79,17 @@ export const postEvent = async (req: Request, res: Response) => {
       description,
       promotion,
       organizer_id,
-      totalSeats: 100, // default seat di-hardcode
+      totalSeats: 100,
     });
 
-    // Kirim response sukses
     sendSuccess(res, 'Event created successfully', event, 201);
-  } catch (error: any) {
-    console.error(' Error saat create event:', error); // Logging error ke console
+  } catch (error) {
+    console.error('Error saat create event:', error);
     sendError(res, 'Failed to create event', 500);
   }
 };
 
-
-// GET 1 event by ID
-export const getEvent = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params; // Ambil ID dari parameter URL
-
-    // Ambil detail event dari service berdasarkan ID
-    const event = await getEventById(id);
-
-    // Jika tidak ditemukan, kirim response 404
-    if (!event) {
-      return sendError(res, 'Event not found', 404);
-    }
-
-    // Kirim response sukses dengan 1 event
-    sendSuccess(res, 'Get event detail successful', event);
-  } catch (error) {
-    console.error(error);
-    sendError(res, 'Failed to get event detail', 500);
-  }
-};
+// ✅ PUT update event
 export const updateEvent = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -156,9 +116,28 @@ export const updateEvent = async (req: Request, res: Response) => {
       },
     });
 
-    res.status(200).json(updatedEvent);
+    return res.status(200).json(updatedEvent);
   } catch (error) {
     console.error("Failed to update event:", error);
-    res.status(500).json({ message: "Failed to update event" });
+    return res.status(500).json({ message: "Failed to update event" });
+  }
+};
+
+// ✅ GET events by organizer
+export const getEventsByOrganizer = async (req: Request, res: Response) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+    const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
+    const events = await prisma.event.findMany({
+      where: { organizer_id: decoded.id },
+      orderBy: { start_date: 'desc' },
+    });
+
+    return res.status(200).json(events); // ✅ pakai return agar tidak lanjut
+  } catch (error) {
+    console.error('Failed to get events by organizer:', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };

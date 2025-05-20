@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
-import api from "@/lib/axios";
-import { Transaction } from "@/interfaces";
+import api from '@/lib/api';
+import { TransactionDetail } from "@/interfaces";
 
 export default function TransactionPage() {
   const { id } = useParams();
   const router = useRouter();
-  const [transaction, setTransaction] = useState<Transaction | null>(null);
+  const [transaction, setTransaction] = useState<TransactionDetail | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,54 +40,50 @@ export default function TransactionPage() {
 
       <div className="space-y-4">
         <div className="border p-4 rounded shadow">
-          <h2 className="text-lg font-bold">{transaction.event.name}</h2>
-          <p className="text-gray-600">{transaction.event.location}</p>
+          <h2 className="text-lg font-bold">{transaction.Event.name}</h2>
+          <p className="text-gray-600">{transaction.Event.location}</p>
           <p className="text-gray-500 text-sm">
-            {new Date(transaction.event.startDate).toLocaleDateString()}
+            {transaction.Event.startDate
+              ? new Date(transaction.Event.startDate).toLocaleDateString()
+              : 'Tanggal tidak tersedia'}
           </p>
         </div>
 
         <div className="border p-4 rounded shadow">
           <p>
-            <strong>Quantity:</strong> {transaction.quantity}
+            <strong>Quantity:</strong> {transaction.ticket_quantity}
           </p>
           <p>
-            <strong>Total:</strong> IDR{" "}
-            {transaction.totalPrice.toLocaleString()}
+            <strong>Total:</strong> IDR {transaction.total_price.toLocaleString()}
           </p>
           <p>
-            <strong>Status:</strong>{" "}
-            {transaction.status.replaceAll("_", " ").toUpperCase()}
+            <strong>Status:</strong> {transaction.status.replaceAll('_', ' ').toUpperCase()}
           </p>
         </div>
 
-        {transaction.paymentProofUrl ? (
+        {transaction.payment_proof ? (
           <div className="border p-4 rounded shadow">
             <h3 className="text-lg font-bold mb-2">Payment Proof</h3>
             <div className="relative w-full h-64">
               <Image
-                src={transaction.paymentProofUrl}
+                src={transaction.payment_proof}
                 alt="Payment Proof"
                 fill
                 className="object-contain rounded"
               />
             </div>
           </div>
-        ) : transaction.status === "waiting_payment" ? (
+        ) : transaction.status === 'waiting_payment' ? (
           <button
-            onClick={() =>
-              router.push(`/transactions/${transaction.id}/upload`)
-            }
+            onClick={() => router.push(`/transactions/${transaction.id}/upload`)}
             className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 mt-4"
           >
             Upload Payment Proof
           </button>
         ) : null}
 
-        {transaction.status === "done" && (
-          <p className="text-green-600 text-center mt-6 font-bold">
-            ✅ Transaction Completed
-          </p>
+        {transaction.status === 'done' && (
+          <p className="text-green-600 text-center mt-6 font-bold">✅ Transaction Completed</p>
         )}
       </div>
     </main>

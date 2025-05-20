@@ -13,7 +13,7 @@ model User {
   email                                     String        @unique
   password                                  String
   role                                      UserRole
-  referral_code                             String        @unique
+  referral_code                             String?        @unique
   referred_by                               String?
   profile_picture                           String?
   created_at                                DateTime      @default(now())

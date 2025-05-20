@@ -1,19 +1,26 @@
-import { Router } from 'express';
-import { postEvent, getEvents, getEvent } from '../controllers/event.controller';
-import { getEventsByOrganizer } from '../controllers/event.controller';
-import { updateEvent } from '../controllers/event.controller';
+// src/routes/event.routes.ts
 
-// matikan middleware
-/*
+import { Router } from 'express';
+import {
+  getEvents,
+  getEvent,
+  postEvent,
+  updateEvent,
+  getEventsByOrganizer,
+} from '../controllers/event.controller';
 import { verifyToken } from '../middlewares/auth.middleware';
-*/
 
 const router = Router();
 
+// ✅ PENTING: ini HARUS di atas `/:id`
+router.get('/organizer', verifyToken, getEventsByOrganizer);
+
+// route publik
 router.get('/', getEvents);
 router.get('/:id', getEvent);
-router.post('/', postEvent);
-router.get("/events/organizer", getEventsByOrganizer);
-router.put('/events/:id', updateEvent);
+
+// route protected
+router.post('/', verifyToken, postEvent);
+router.put('/:id', verifyToken, updateEvent);
 
 export default router;

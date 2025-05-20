@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import api from "@/lib/axios";
+import api from '@/lib/api';
 import { Event } from "@/interfaces";
 import { toast } from "react-hot-toast";
 

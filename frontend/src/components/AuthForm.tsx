@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import api from '@/lib/axios';
-import axios from 'axios';
+import api from '@/lib/api';
 import { AuthFormProps } from '@/interfaces';
+import { jwtDecode } from 'jwt-decode';
+import { isAxiosError } from 'axios';
 
 export default function AuthForm({ type, role }: AuthFormProps) {
   const [email, setEmail] = useState('');
@@ -17,40 +18,60 @@ export default function AuthForm({ type, role }: AuthFormProps) {
     e.preventDefault();
 
     try {
-      const endpoint = type === 'register' ? '/register' : '/login';
+      const endpoint = type === 'register' ? '/auth/register' : '/auth/login';
 
       const payload =
         type === 'register'
           ? {
               email,
               password,
-              role: role.toUpperCase(), // CUSTOMER | ORGANIZER
+              role: role.toUpperCase(), // 'CUSTOMER' | 'ORGANIZER'
               full_name: fullName,
-              referral_code: referralCode || '',
+              referral_code: referralCode || undefined,
             }
-          : { email, password, role: role.toUpperCase() };
+          : {
+              email,
+              password,
+              role: role.toUpperCase(),
+            };
 
       const res = await api.post(endpoint, payload);
+      console.log('Login response:', res.data);
 
       if (type === 'login') {
-        localStorage.setItem('accessToken', res.data.accessToken);
-        router.push(role === 'organizer' ? '/dashboard' : '/');
+        const token = res.data?.token;
+        if (!token) {
+          throw new Error('Access token not received');
+        }
+
+        localStorage.setItem('token', token);
+
+        // Decode JWT token
+        const decoded: { id: string; email: string; role: string } = jwtDecode(token);
+        const userRole = decoded.role?.toLowerCase();
+
+        // Redirect based on role
+        router.push(userRole === 'organizer' ? '/dashboard' : '/');
       } else {
         alert('Registration successful!');
         router.push('/login');
       }
     } catch (err: unknown) {
-      if (axios.isAxiosError(err) && err.response) {
-        alert('Failed: ' + err.response.data.message);
+      if (isAxiosError(err) && err.response) {
+        const errorMsg =
+          err.response.data?.message || JSON.stringify(err.response.data) || 'Unknown error';
+        alert('Failed: ' + errorMsg);
       } else {
+        console.error('Unexpected error:', err);
         alert('Unexpected error occurred');
       }
     }
+
   };
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full max-w-md mx-auto">
-      <h1 className="text-2xl font-bold text-center">
+      <h1 className="text-2xl font-bold text-center mb-4">
         {type === 'register' ? 'Register' : 'Login'} as {role}
       </h1>
 
@@ -77,19 +98,19 @@ export default function AuthForm({ type, role }: AuthFormProps) {
       <input
         type="email"
         placeholder="Email"
-        className="border px-4 py-2 rounded"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
+        className="border px-4 py-2 rounded"
       />
 
       <input
         type="password"
         placeholder="Password"
-        className="border px-4 py-2 rounded"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
+        className="border px-4 py-2 rounded"
       />
 
       <button

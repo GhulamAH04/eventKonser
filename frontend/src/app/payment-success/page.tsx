@@ -34,9 +34,9 @@ export default function PaymentSuccessPage() {
         {transaction ? (
           <>
             <p className="text-gray-600 text-lg max-w-md">
-              Kamu telah membeli <b>{transaction.quantity}</b> tiket untuk acara{' '}
-              <b>{transaction.event.name}</b>. Total pembayaran sebesar{' '}
-              <b>Rp {transaction.totalPrice.toLocaleString('id-ID')}</b>.
+              Kamu telah membeli <b>{transaction.ticket_quantity}</b> tiket untuk acara{' '}
+              <b>{transaction.Event.name}</b>. Total pembayaran sebesar{' '}
+              <b>Rp {transaction.total_price.toLocaleString('id-ID')}</b>.
             </p>
             <p className="text-sm text-gray-500 mt-2">
               Status:{' '}

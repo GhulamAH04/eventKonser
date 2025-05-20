@@ -18,10 +18,10 @@ export default function HomePage() {
   const [category, setCategory] = useState('');
   const [location, setLocation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [sortBy, setSortBy] = useState('newest');
 
 
-  const debouncedSearch = useDebounce(search, 500); // ✅ debounce 500ms
+
+  const debouncedSearch = useDebounce(search, 500); //  debounce 500ms
 
   useEffect(() => {
     async function getEvents() {
@@ -38,7 +38,7 @@ export default function HomePage() {
     }
 
     getEvents();
-  }, [debouncedSearch, category, location, sortBy]);
+  }, [debouncedSearch, category, location]);
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col">
@@ -47,14 +47,6 @@ export default function HomePage() {
       <main className="flex flex-col items-center px-4 md:px-12 lg:px-24 pt-32 pb-8 gap-8">
         {/* Hero Section */}
         <HeroSection />
-
-        {/* Promo of the Week */}
-        <section className="w-full mt-8 animate-fade-in-down">
-          <div className="bg-gradient-to-r from-sky-400 to-sky-600 text-white rounded-2xl p-8 text-center shadow-xl">
-            <h2 className="text-3xl font-bold mb-2">🔥 Promo of the Week 🔥</h2>
-            <p className="text-lg">Get up to 30% off for your favorite concerts!</p>
-          </div>
-        </section>
 
         {/* Popular Genres */}
         <section className="w-full mt-12">
@@ -93,7 +85,8 @@ export default function HomePage() {
             ))}
           </div>
 
-          {/* Sort Events */}
+          {/* GA JADI KARENA GAGAL SORTING 
+          Sort Events 
           <div className="w-full mt-6 flex justify-end">
             <select
               value={sortBy}
@@ -105,7 +98,8 @@ export default function HomePage() {
               <option value="cheapest">Sort by Cheapest</option>
               <option value="expensive">Sort by Most Expensive</option>
             </select>
-          </div>
+          </div> */}
+          
 
           {/* 🔄 Reset Filter Button */}
           {(category || location) && (

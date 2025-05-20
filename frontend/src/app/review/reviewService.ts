@@ -1,4 +1,4 @@
-import api from "@/lib/axios";
+import api from "@/lib/api";
 
 // Submit review dari user
 export const submitReview = async (

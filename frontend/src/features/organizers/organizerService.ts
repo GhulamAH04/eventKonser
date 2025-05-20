@@ -1,10 +1,10 @@
-import axios from '@/lib/axios'
+import api from "@/lib/api";
 import { OrganizerProfile } from '@/interfaces/organizerProfile';
 
 // fungsi utama untuk ambil data organizer + review
 export async function fetchOrganizerProfile(organizerId: string): Promise<OrganizerProfile | null> {
   try {
-    const response = await axios.get(`/organizers/${organizerId}`);
+    const response = await api.get(`/organizers/${organizerId}`);
     console.log('📡 API Response:', response.data); 
     return response.data;
   } catch (error) {

@@ -1,40 +1,57 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import api from '@/lib/axios';
+import api from '@/lib/api';
 import Link from 'next/link';
-import { Event } from '@/interfaces/event'; 
-import { getUserFromToken } from '@/lib/auth';
+import { Event } from '@/interfaces/event';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import LogoutButton from '@/components/LogoutButton';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import ConfirmModal from '@/components/ConfirmModal';
+import { User } from '@/interfaces';
+import { jwtDecode } from 'jwt-decode';
 
 export default function DashboardPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null); // ✅ type safe
   const router = useRouter();
-  const user = getUserFromToken();
 
- const fetchEvents = useCallback(async () => {
-   setLoading(true);
-   try {
-     const res = await api.get('/events/organizer');
-     setEvents(res.data);
-   } catch (error) {
-     console.error(error);
-   } finally {
-     setLoading(false);
-   }
- }, []);
+  // Ambil user dari token client-side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const decoded = jwtDecode<User & { id: string }>(token);
+          setUser(decoded);
+        } catch (err) {
+          console.error('Failed to decode token:', err);
+        }
+      }
+    }
+  }, []);
 
+  const fetchEvents = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/events/organizer');
+      setEvents(res.data);
+    } catch (error) {
+      console.error('Failed to fetch events:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    fetchEvents();
-  }, [fetchEvents]);
+    if (user) {
+      fetchEvents();
+    }
+  }, [user, fetchEvents]);
 
   const openDeleteModal = (eventId: string) => {
     setSelectedEventId(eventId);
@@ -46,7 +63,7 @@ export default function DashboardPage() {
     try {
       await api.delete(`/events/${selectedEventId}`);
       toast.success('Event berhasil dihapus!');
-      fetchEvents(); 
+      fetchEvents();
     } catch {
       toast.error('Gagal menghapus event.');
     } finally {

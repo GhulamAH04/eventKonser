@@ -1,7 +1,7 @@
   "use client";
 
   import { useEffect, useState, useCallback } from "react";
-  import api from "@/lib/axios";
+ import api from '@/lib/api';
   import { useParams } from "next/navigation";
   import { EventTransaction } from '@/interfaces/transaction';
   import Image from "next/image";
