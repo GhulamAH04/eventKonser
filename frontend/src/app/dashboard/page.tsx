@@ -106,7 +106,9 @@ export default function DashboardPage() {
                     <h2 className="text-lg font-bold hover:underline">{event.name}</h2>
                   </Link>
                   <p>{event.location}</p>
-                  <p>{new Date(event.startDate).toLocaleString()}</p>
+                  <p className="text-gray-600">
+                    {event.startDate ? new Date(event.startDate).toLocaleDateString() : 'No Date'}
+                  </p>
 
                   <div className="flex gap-2 mt-4">
                     <button

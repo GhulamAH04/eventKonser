@@ -48,6 +48,7 @@ export default function AuthForm({ type, role }: AuthFormProps) {
 
         // Decode JWT token
         const decoded: { id: string; email: string; role: string } = jwtDecode(token);
+        console.log('Decoded token:', decoded); // <== ini tampilkan id-nya
         const userRole = decoded.role?.toLowerCase();
 
         // Redirect based on role

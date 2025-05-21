@@ -31,4 +31,5 @@ export interface EventFormData {
   promotionDiscount?: number;
   promotionStartDate?: string;
   promotionEndDate?: string;
+  category: string;
 }

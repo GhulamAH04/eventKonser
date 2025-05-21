@@ -53,6 +53,7 @@ export const getAllEvents = async (
 
 //  Buat event baru + tambahkan promo jika ada
 export const createEvent = async (data: {
+  
   name: string;
   description?: string;
   category: string;
@@ -69,6 +70,7 @@ export const createEvent = async (data: {
     endDate: string;
   };
 }) => {
+  console.log(" organizer_id yang masuk:", data.organizer_id);
   const event = await prisma.event.create({
     data: {
       name: data.name,
@@ -80,7 +82,7 @@ export const createEvent = async (data: {
       end_date: new Date(data.endDate),
       total_seats: data.totalSeats,
       remaining_seats: data.totalSeats,
-      organizer_id: 'org-1',
+      organizer_id: data.organizer_id,
     },
   });
 

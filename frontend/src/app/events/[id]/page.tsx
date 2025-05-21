@@ -61,7 +61,9 @@ export default function EventDetailPage() {
           <div className="flex flex-col md:flex-row justify-between gap-4">
             <div>
               <h2 className="text-gray-600 font-semibold">Start Date</h2>
-              <p className="text-sky-700">{new Date(event.startDate).toLocaleDateString()}</p>
+              <p className="text-sky-600">
+                {event.startDate ? new Date(event.startDate).toLocaleDateString() : 'No Date'}
+              </p>
             </div>
             <div>
               <h2 className="text-gray-600 font-semibold">End Date</h2>
@@ -88,7 +90,10 @@ export default function EventDetailPage() {
                 discount up to Rp {event.promotion[0].discount.toLocaleString('id-ID')}
               </p>
               <p className="text-xs text-yellow-500 mt-1">
-                Valid until {new Date(event.promotion[0].endDate).toLocaleDateString()}
+                Valid until{' '}
+                {event.promotion?.[0]?.endDate
+                  ? new Date(event.promotion[0].endDate).toLocaleDateString()
+                  : 'Unknown'}
               </p>
             </div>
           )}

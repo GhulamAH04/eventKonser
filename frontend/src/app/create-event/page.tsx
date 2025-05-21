@@ -20,11 +20,13 @@ export default function CreateEventPage() {
     try {
       const token = localStorage.getItem('token');
       const decoded = token ? jwtDecode<{ id: string }>(token) : null;
-
+      console.log(' Decoded token:', decoded);
       if (!decoded) {
         toast.error('Unauthorized');
         return;
       }
+      console.log('Organizer ID dari frontend:', decoded.id);
+
       await api.post('/events', {
         ...data,
         organizer_id: decoded.id,

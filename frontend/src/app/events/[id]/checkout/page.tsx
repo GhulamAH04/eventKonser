@@ -130,7 +130,9 @@ export default function CheckoutPage() {
           <div className="space-y-2">
             <h2 className="text-2xl font-bold text-gray-800">{event.name}</h2>
             <p className="text-gray-600">{event.location}</p>
-            <p className="text-gray-600">{new Date(event.startDate).toLocaleDateString()}</p>
+            <p className="text-gray-600">
+              {event.startDate ? new Date(event.startDate).toLocaleDateString() : 'No Date'}
+            </p>
           </div>
 
           {/* Email Input */}
