@@ -1,3 +1,4 @@
+// frontend/src/app/review/reviewService.ts
 import api from "@/lib/api";
 
 // Submit review dari user
@@ -5,7 +6,7 @@ export const submitReview = async (
   eventId: string,
   data: { rating: number; comment: string }
 ) => {
-  return await api.post(`/reviews/${eventId}`, data);
+  return await api.post(`/reviews/${eventId}`, data);  // pastikan menggunakan eventId
 };
 
 // Ambil review untuk 1 event
@@ -22,4 +23,3 @@ export const getReviewsByOrganizer = async (organizerId: string) => {
 export const getOrganizerProfile = async (organizerId: string) => {
   return await api.get(`/organizers/${organizerId}/profile`);
 };
-

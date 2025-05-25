@@ -20,7 +20,7 @@ export default function MyTicketPage() {
       setLoading(true);
       try {
         const res = await api.get('/transactions/user', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem('Token')}` },
         });
         setTransactions(res.data); // Menyimpan data transaksi yang didapat
       } catch (error) {

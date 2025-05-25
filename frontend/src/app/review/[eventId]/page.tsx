@@ -2,22 +2,22 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { submitReview } from '@/app/review/reviewService'; // pastikan path ini sesuai
+import { submitReview } from '@/app/review/reviewService'; 
 import Navbar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 
 export default function SubmitReviewPage() {
-  const { reviewId } = useParams<{ reviewId: string }>();
+  const { eventId } = useParams<{ eventId: string }>(); // Menggunakan eventId dari URL params
   const router = useRouter();
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!reviewId) return;
+    if (!eventId) return;
     setIsSubmitting(true);
     try {
-      await submitReview(reviewId, { rating, comment });
+      await submitReview(eventId, { rating, comment }); // Mengirimkan eventId dan data review ke API
       alert('Review submitted successfully!');
       router.push('/');
     } catch (error) {
