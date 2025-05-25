@@ -220,3 +220,26 @@ export const getTransactionsByEvent = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Failed to fetch transactions' });
   }
 };
+
+// transaction by user
+
+// GET /transactions/user
+export const getTransactionsByUser = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    const transactions = await prisma.transaction.findMany({
+      where: { user_id: userId },
+      include: {
+        Event: true,
+      },
+      orderBy: { created_at: 'desc' },
+    });
+
+    res.json(transactions);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to fetch transactions' });
+  }
+};

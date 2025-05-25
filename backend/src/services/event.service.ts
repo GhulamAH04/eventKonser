@@ -71,6 +71,8 @@ export const createEvent = async (data: {
   };
 }) => {
   console.log(" organizer_id yang masuk:", data.organizer_id);
+  console.log('[SERVICE] price:', data.price);
+console.log('[SERVICE] startDate:', data.startDate);
   const event = await prisma.event.create({
     data: {
       name: data.name,

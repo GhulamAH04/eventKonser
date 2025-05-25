@@ -4,8 +4,11 @@ import {
   createTransactionController,
   uploadPaymentProof,
   getTransactionById,
-  getTransactionsByEvent
+  getTransactionsByEvent,
+  getTransactionsByUser
 } from '../controllers/transaction.controller';
+
+import { verifyTokenAndRole } from '../middlewares/auth.middleware';
 
 import { getTransactionsByOrganizer } from '../controllers/transaction.controller';
 
@@ -29,5 +32,9 @@ router.patch('/transactions/:id/status', updateTransactionStatus);
 router.get('/transactions/organizer', getTransactionsByOrganizer);
 
 router.get('/transactions/event/:eventId', getTransactionsByEvent);
+
+router.get('/user', getTransactionsByUser);
+
+router.get('/transactions/user', verifyTokenAndRole('user'), getTransactionsByUser);
 
 export default router;

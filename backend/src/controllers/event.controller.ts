@@ -68,6 +68,15 @@ export const postEvent = async (req: Request, res: Response) => {
     if (!name || !category || !location || !startDate || !endDate) {
       return sendError(res, 'Missing required fields', 400);
     }
+console.log('[CREATE EVENT] Data dari frontend:', {
+  name,
+  category,
+  location,
+  price,
+  startDate,
+  endDate,
+  organizer_id,
+});
 
     const event = await createEvent({
       name,
